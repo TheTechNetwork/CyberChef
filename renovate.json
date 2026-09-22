@@ -1,0 +1,51 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "security:openssf-scorecard",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    "group:linters"
+  ],
+  "timezone": "Europe/London",
+  "schedule": [
+    "* 0-6 * * 5"
+  ],
+  "minimumReleaseAge": "2 days",
+  "rebaseWhen": "conflicted",
+  "labels": [
+    "dependencies"
+  ],
+  "vulnerabilityAlerts": {
+    "schedule": [
+      "at any time"
+    ],
+    "minimumReleaseAge": null
+  },
+  "packageRules": [
+    {
+      "description": "Label major updates so they are obvious in review. This is a fork of gchq/CyberChef kept in sync by pull[bot], so every merge here is a local commit that upstream syncs have to merge around - a major that could equally be taken from upstream later is usually not worth carrying ourselves.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "addLabels": [
+        "major-update"
+      ]
+    },
+    {
+      "description": "The @unabandoned forks this repository aliases its browser polyfills to. These are ours rather than gchq's, so nobody upstream will ever bump them, and their releases are how security fixes reach this bundle - CVE-2025-14505 in elliptic arrived this way. They skip the weekly window and the soak period accordingly. Both the alias targets and the local names they are installed under are listed, since which of the two Renovate reports for an aliased dependency has varied between versions.",
+      "matchPackageNames": [
+        "@unabandoned/**",
+        "crypto-browserify",
+        "stream-browserify",
+        "browserify-zlib"
+      ],
+      "addLabels": [
+        "unabandoned"
+      ],
+      "schedule": [
+        "at any time"
+      ],
+      "minimumReleaseAge": null
+    }
+  ]
+}
