@@ -1,0 +1,22 @@
+# pull[bot] configuration.
+#
+# Without this file pull[bot] uses its default `mergeMethod: hardreset`, which
+# force-resets this fork to upstream on every sync and silently discards any
+# commit of our own. That is what happened to #149: it merged, the next sync
+# reset master to gchq's head, and the commit is not in the history at all —
+# the resulting head has a single parent, not a merge.
+#
+# `merge` keeps upstream flowing in while preserving our commits. When upstream
+# touches the same lines we do, pull[bot] leaves the PR open and labelled
+# instead of resolving it by throwing our side away, so a conflict becomes a
+# review rather than a silent loss.
+version: "1"
+rules:
+  - base: master
+    upstream: gchq:master
+    mergeMethod: merge
+    mergeUnstable: false
+label: "pull"
+conflictLabel: "merge-conflict"
+conflictReviewers:
+  - 00o-sh
