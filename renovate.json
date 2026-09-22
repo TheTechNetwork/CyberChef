@@ -2,10 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
+    "abandonments:recommended",
     "security:openssf-scorecard",
     ":enableVulnerabilityAlertsWithLabel(security)",
     "group:linters"
   ],
+  "abandonmentThreshold": "1 year",
   "timezone": "Europe/London",
   "schedule": [
     "* 0-6 * * 5"
