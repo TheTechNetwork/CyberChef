@@ -100,7 +100,7 @@
     "@blu3r4y/lzma": "^2.3.3",
     "@noble/hashes": "2.4.0",
     "@wavesenterprise/crypto-gost-js": "^2.1.0-RC1",
-    "@xmldom/xmldom": "^0.8.15",
+    "@xmldom/xmldom": "^0.9.0",
     "argon2-browser": "^1.18.0",
     "arrive": "^2.5.3",
     "assert": "^2.1.0",
