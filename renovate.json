@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
+    "github>unabandoned/renovate-config:abandoned-exclusions",
     "abandonments:recommended",
     "security:openssf-scorecard",
     ":enableVulnerabilityAlertsWithLabel(security)",
@@ -39,7 +40,12 @@
         "@unabandoned/**",
         "crypto-browserify",
         "stream-browserify",
-        "browserify-zlib"
+        "browserify-zlib",
+        "assert",
+        "buffer",
+        "events",
+        "path",
+        "url"
       ],
       "addLabels": [
         "unabandoned"
