@@ -14,7 +14,7 @@
     "* 0-6 * * 5"
   ],
   "minimumReleaseAge": "2 days",
-  "rebaseWhen": "conflicted",
+  "rebaseWhen": "behind-base-branch",
   "labels": [
     "dependencies"
   ],
