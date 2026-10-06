@@ -95,7 +95,7 @@ class XORBruteForce extends Operation {
             output = [];
         let result,
             resultUtf8,
-            record = "";
+            record;
 
         input = input.slice(sampleOffset, sampleOffset + sampleLength);
 

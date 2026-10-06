@@ -38,8 +38,7 @@ class IndexOfCoincidence extends Operation {
             frequencies = new Array(26).fill(0),
             alphabet = Utils.expandAlphRange("a-z");
         let coincidence = 0.00,
-            density = 0.00,
-            result = 0.00,
+            density,
             i;
 
         for (i=0; i < alphabet.length; i++) {
@@ -55,7 +54,7 @@ class IndexOfCoincidence extends Operation {
         // Ensure that we don't divide by 0
         if (density < 2) density = 2;
 
-        result = coincidence / (density * (density - 1));
+        const result = coincidence / (density * (density - 1));
 
         return result;
     }

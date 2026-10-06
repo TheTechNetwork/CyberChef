@@ -133,7 +133,7 @@ export class ColossusComputer {
      * Run tape loop
      */
     runTape() {
-        let charZin = "";
+        let charZin;
 
         this.Xptr = [this.rotorPtrs.X1, this.rotorPtrs.X2, this.rotorPtrs.X3, this.rotorPtrs.X4, this.rotorPtrs.X5];
         this.Mptr = [this.rotorPtrs.M37, this.rotorPtrs.M61];

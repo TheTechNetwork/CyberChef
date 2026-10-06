@@ -50,7 +50,7 @@ class PadLines extends Operation {
         const [position, len, chr] = args,
             lines = input.split("\n");
         let output = "",
-            i = 0;
+            i;
 
         if (position === "Start") {
             for (i = 0; i < lines.length; i++) {

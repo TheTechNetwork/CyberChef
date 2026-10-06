@@ -36,7 +36,7 @@ class AnalyseHash extends Operation {
         input = input.replace(/\s/g, "");
 
         let output = "",
-            possibleHashFunctions = [];
+            possibleHashFunctions;
         const byteLength = input.length / 2,
             bitLength = byteLength * 8;
 

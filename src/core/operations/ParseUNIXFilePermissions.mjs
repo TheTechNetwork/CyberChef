@@ -66,7 +66,7 @@ class ParseUNIXFilePermissions extends Operation {
             g = 0,
             o = 0,
             output = "",
-            octal = null,
+            octal,
             textual = null;
 
         if (input.search(/\s*[0-7]{1,4}\s*/i) === 0) {
@@ -228,7 +228,7 @@ class ParseUNIXFilePermissions extends Operation {
  * @returns {string}
  */
 function permsToStr(perms) {
-    let str = "",
+    let str,
         type = "-";
 
     if (perms.d) type = "d";

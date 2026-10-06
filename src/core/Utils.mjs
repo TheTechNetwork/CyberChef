@@ -1178,7 +1178,7 @@ class Utils {
             }
         }
 
-        return html += "</div>";
+        return html + "</div>";
     }
 
 

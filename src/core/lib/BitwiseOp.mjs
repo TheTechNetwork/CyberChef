@@ -19,9 +19,9 @@
 export function bitOp (input, key, func, nullPreserving, scheme) {
     if (!key || !key.length) key = [0];
     const result = [];
-    let x = null,
-        k = null,
-        o = null;
+    let x,
+        k,
+        o;
 
     for (let i = 0; i < input.length; i++) {
         k = key[i % key.length];

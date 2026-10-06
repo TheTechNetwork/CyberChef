@@ -60,9 +60,9 @@ class GroupIPAddresses extends Operation {
             ips = input.split(delim),
             ipv4Networks = {},
             ipv6Networks = {};
-        let match = null,
+        let match,
             output = "",
-            ip = null,
+            ip,
             network = null,
             networkStr = "",
             i;
@@ -85,7 +85,6 @@ class GroupIPAddresses extends Operation {
             } else if ((match = IPV6_REGEX.exec(ips[i]))) {
                 ip = strToIpv6(match[1]);
                 network = [];
-                networkStr = "";
 
                 for (let j = 0; j < 8; j++) {
                     network.push(ip[j] & ipv6Mask[j]);

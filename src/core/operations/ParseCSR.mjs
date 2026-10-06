@@ -132,7 +132,7 @@ function formatRequestedExtensions(csrParam) {
 
     if (Object.hasOwn(csrParam, "extreq")) {
         for (const extension of csrParam.extreq) {
-            let parts = [];
+            let parts;
             switch (extension.extname) {
                 case "basicConstraints" :
                     parts = describeBasicConstraints(extension);

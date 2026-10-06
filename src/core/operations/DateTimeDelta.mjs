@@ -79,7 +79,7 @@ class DateTimeDelta extends Operation {
         const hoursDelta = args[4];
         const minutesDelta = args[5];
         const secondsDelta = args[6];
-        let date = "";
+        let date;
 
         try {
             date = moment.tz(input, inputFormat, inputTimezone);

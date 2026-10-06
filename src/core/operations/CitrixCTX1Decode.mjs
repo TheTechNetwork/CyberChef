@@ -40,7 +40,7 @@ class CitrixCTX1Decode extends Operation {
         }
         const revinput = input.reverse();
         const result = [];
-        let temp = 0;
+        let temp;
         for (let i = 0; i < revinput.length; i += 2) {
             if (i + 2 >= revinput.length) {
                 temp = 0;

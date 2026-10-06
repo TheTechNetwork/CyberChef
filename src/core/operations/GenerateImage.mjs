@@ -118,8 +118,8 @@ class GenerateImage extends Operation {
                 const x = index % width;
                 const y = Math.floor(index / width);
 
-                let red = 0x00;
-                let green = 0x00;
+                let red;
+                let green;
                 let blue = 0x00;
                 let alpha = 0xff;
 

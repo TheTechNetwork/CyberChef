@@ -72,7 +72,7 @@ export function ipv6CidrRange(cidr, includeNetworkInfo) {
         total = new Array(128);
 
     const mask = genIpv6Mask(cidrRange);
-    let totalDiff = "";
+    let totalDiff;
 
 
     for (let i = 0; i < 8; i++) {
@@ -168,7 +168,7 @@ export function ipv6HyphenatedRange(range, includeNetworkInfo) {
         total = new Array(128).fill();
 
     let output = "",
-        t = "",
+        t,
         i;
 
     for (i = 0; i < 8; i++) {
@@ -394,7 +394,7 @@ export function strToIpv6(ipStr) {
  */
 export function ipv6ToStr(ipv6, compact) {
     let output = "",
-        i = 0;
+        i;
 
     if (compact) {
         let start = -1,

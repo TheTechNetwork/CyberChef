@@ -52,7 +52,7 @@ class FromCharcode extends Operation {
         const delim = Utils.charRep(args[0] || "Space"),
             base = args[1];
         let bites = input.split(delim),
-            i = 0;
+            i;
 
         if (base < 2 || base > 36) {
             throw new OperationError("Error: Base argument must be between 2 and 36");

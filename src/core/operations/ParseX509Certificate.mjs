@@ -91,7 +91,7 @@ class ParseX509Certificate extends Operation {
             sig = cert.getSignatureValueHex();
 
         let pkStr = "",
-            sigStr = "",
+            sigStr,
             extensions = "";
 
         // Public Key fields

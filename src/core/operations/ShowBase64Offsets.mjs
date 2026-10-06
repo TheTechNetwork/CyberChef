@@ -60,8 +60,8 @@ class ShowBase64Offsets extends Operation {
         let offset0 = toBase64(input, alphabet),
             offset1 = toBase64([0].concat(input), alphabet),
             offset2 = toBase64([0, 0].concat(input), alphabet),
-            staticSection = "",
-            padding = "";
+            staticSection,
+            padding;
 
         const len0 = offset0.indexOf("="),
             len1 = offset1.indexOf("="),

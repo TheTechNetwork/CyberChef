@@ -231,7 +231,7 @@ function regexList(input, regex, displayTotal, matches, captureGroups) {
  * @returns {string}
  */
 function regexHighlight(input, regex, displayTotal) {
-    let output = "",
+    let output,
         title = "",
         hl = 1,
         total = 0;

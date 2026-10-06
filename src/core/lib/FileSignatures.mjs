@@ -2633,7 +2633,7 @@ export function extractJPEG(bytes, offset) {
         const marker = stream.getBytes(2);
         if (marker[0] !== 0xff) throw new Error(`Invalid marker while parsing JPEG at pos ${stream.position}: ${marker}`);
 
-        let segmentSize = 0;
+        let segmentSize;
         switch (marker[1]) {
             // No length
             case 0xd8: // Start of Image
@@ -3037,7 +3037,7 @@ export function extractPNG(bytes, offset) {
     // Move past signature to first chunk
     stream.moveForwardsBy(8);
 
-    let chunkSize = 0,
+    let chunkSize,
         chunkType = "";
 
     while (chunkType !== "IEND") {

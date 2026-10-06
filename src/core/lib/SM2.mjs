@@ -127,8 +127,8 @@ export class SM2 {
         const c1X = input.slice(0, 64);
         const c1Y = input.slice(64, 128);
 
-        let c3 = "";
-        let c2 = "";
+        let c3;
+        let c2;
 
         if (this.format === "C1C3C2") {
             c3 = input.slice(128, 192);

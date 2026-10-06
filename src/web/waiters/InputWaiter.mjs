@@ -778,7 +778,7 @@ class InputWaiter {
     updateInputValue(inputNum, value, force=false) {
         // Prepare the value as a buffer (full value) and a string sample (up to 4096 bytes)
         let buffer;
-        let stringSample = "";
+        let stringSample;
 
         // If value is a string, interpret it using the specified character encoding
         const tabNum = this.manager.tabs.getActiveTab("input");
@@ -1033,7 +1033,7 @@ class InputWaiter {
 
         // Dropped files
         if (e?.dataTransfer?.files?.length > 0) {
-            let files = [];
+            let files;
 
             // Handling the files as FileSystemEntry objects allows us to open directories,
             // but relies on a function that may be deprecated in future.

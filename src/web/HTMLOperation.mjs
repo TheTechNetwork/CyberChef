@@ -161,8 +161,8 @@ class HTMLOperation {
  */
 function titleFromWikiLink(urlStr) {
     const urlObj = url.parse(urlStr);
-    let wikiName = "",
-        pageTitle = "";
+    let wikiName,
+        pageTitle;
 
     switch (urlObj.host) {
         case "forensics.wiki":
