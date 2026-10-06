@@ -113,6 +113,22 @@ module.exports = {
         new ModifySourcePlugin({
             rules: [
                 {
+                    // jq-web invokes its own Emscripten factory at import time with no
+                    // options, so there is no way to tell it where jq.wasm went. Bundled,
+                    // its own path detection comes up empty and it aborts with
+                    // "Failed to execute 'open' on 'XMLHttpRequest': Invalid URL".
+                    // jq.wasm is copied to the output root, next to ChefWorker.js, which
+                    // is what self.location resolves against inside the worker.
+                    test: /jq-web\/jq\.js$/,
+                    operations: [
+                        new ReplaceOperation(
+                            "once",
+                            "jq = jq().then(",
+                            "jq = jq({locateFile: (path) => (typeof self !== \"undefined\" && self.location ? new URL(path, self.location.href).href : path)}).then("
+                        )
+                    ]
+                },
+                {
                     // Fix toSpare(0) bug in Split.js by avoiding gutter accomodation
                     test: /split\.es\.js$/,
                     operations: [
