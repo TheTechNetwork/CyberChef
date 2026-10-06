@@ -26,6 +26,13 @@
   },
   "packageRules": [
     {
+      "description": "jimp 1.6.1 ships a broken browser build: dist/browser/index.js is a 98-byte `export {}` stub, so every bundler that resolves the \"browser\" export condition - webpack included - gets an empty module and `import {Jimp} from \"jimp\"` is silently undefined. In CyberChef that surfaced as every image operation failing with \"Error loading image. (TypeError: Cannot read properties of undefined (reading 'read'))\" in the UI tests while the Node tests passed, because Node takes the \"import\" condition instead. Reported upstream as jimp-dev/jimp#1402 and still open. Only 1.6.1 is excluded, so 1.6.2 will be offered as soon as it exists.",
+      "matchPackageNames": [
+        "jimp"
+      ],
+      "allowedVersions": "<1.6.1 || >1.6.1"
+    },
+    {
       "description": "Label major updates so they are obvious in review. This is a fork of gchq/CyberChef kept in sync by pull[bot], so every merge here is a local commit that upstream syncs have to merge around - a major that could equally be taken from upstream later is usually not worth carrying ourselves.",
       "matchUpdateTypes": [
         "major"

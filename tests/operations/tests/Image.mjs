@@ -244,7 +244,11 @@ TestRegister.addTests([
     {
         name: "View Bit Plane: malformed PNG",
         input: PNG_HEX.replace("49484452", "49424452"),
-        expectedOutput: "Error loading image. (Error: unrecognised content at end of stream)",
+        // What the operation must do is report the failure rather than throw. The text in
+        // the brackets is jimp's, and it changes between its releases - 1.6.1 bumped
+        // file-type from v16 to v21 and started saying "Could not find MIME for Buffer" -
+        // so match only the part the operation is responsible for.
+        expectedMatch: /^Error loading image\. \(Error: .+\)$/,
         recipeConfig: [
             {
                 op: "From Hex",
