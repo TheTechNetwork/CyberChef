@@ -44,12 +44,16 @@ class Jq extends Operation {
      * @param {Object[]} args
      * @returns {string}
      */
-    run(input, args) {
+    async run(input, args) {
         const [query, raw] = args;
         let result;
 
+        // jq-web 0.6 is a WebAssembly build, and the module's export is now the promise
+        // for it rather than the module itself.
+        const jqModule = await jq;
+
         try {
-            result = jq.json(input, query);
+            result = jqModule.json(input, query);
         } catch (err) {
             throw new OperationError(`Invalid jq expression: ${err.message}`);
         }

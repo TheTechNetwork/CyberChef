@@ -99,6 +99,14 @@ module.exports = {
                     context: "node_modules/node-forge/dist",
                     from: "prime.worker.min.js",
                     to: "assets/forge/"
+                }, {
+                    // jq-web 0.6 is a WebAssembly build whose Emscripten glue resolves
+                    // jq.wasm relative to the script that loaded it, with no way to
+                    // override it - the module calls its own factory with no options. So
+                    // the file goes to the output root, next to ChefWorker.js.
+                    context: "node_modules/jq-web",
+                    from: "jq.wasm",
+                    to: "./"
                 }
             ]
         }),
