@@ -8,20 +8,13 @@
 
 import OperationError from "../errors/OperationError.mjs";
 import geohash from "ngeohash";
-/*
-Currently unable to update to geodesy v2 as we cannot load .js modules into a .mjs file.
-When we do update, imports will look like this:
-
-import LatLonEllipsoidal from "geodesy/latlon-ellipsoidal.js";
-import Mgrs from "geodesy/mgrs.js";
-import OsGridRef from "geodesy/osgridref.js";
+// geodesy v2 splits the single LatLon class of v1 into one subclass per projection, and
+// they are siblings rather than a chain: the LatLon that knows toUtm()/toMgrs() is not the
+// one that knows toOsGrid(). This operation converts between every pair of formats, so it
+// keeps hold of plain lat/lon and builds whichever class the requested output needs.
+import Mgrs, {LatLon as LatLonMgrs} from "geodesy/mgrs.js";
+import OsGridRef, {LatLon as LatLonOsGridRef} from "geodesy/osgridref.js";
 import Utm from "geodesy/utm.js";
-*/
-import geodesy from "geodesy";
-const LatLonEllipsoidal = geodesy.LatLonEllipsoidal,
-    Mgrs = geodesy.Mgrs,
-    OsGridRef = geodesy.OsGridRef,
-    Utm = geodesy.Utm;
 
 /**
  * Co-ordinate formats
@@ -129,15 +122,15 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
     switch (inFormat) {
         case "Geohash":
             hash = geohash.decode(input.replace(/[^A-Za-z0-9]/g, ""));
-            latlon = new LatLonEllipsoidal(hash.latitude, hash.longitude);
+            latlon = new LatLonMgrs(hash.latitude, hash.longitude);
             break;
         case "Military Grid Reference System":
             utm = Mgrs.parse(input.replace(/[^A-Za-z0-9]/g, "")).toUtm();
-            latlon = utm.toLatLonE();
+            latlon = utm.toLatLon();
             break;
         case "Ordnance Survey National Grid":
             osng = OsGridRef.parse(input.replace(/[^A-Za-z0-9]/g, ""));
-            latlon = OsGridRef.osGridToLatLon(osng);
+            latlon = osng.toLatLon();
             break;
         case "Universal Transverse Mercator":
             // Geodesy needs a space between the first 2 digits and the next letter
@@ -145,7 +138,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                 input = input.slice(0, 2) + " " + input.slice(2);
             }
             utm = Utm.parse(input);
-            latlon = utm.toLatLonE();
+            latlon = utm.toLatLon();
             break;
         case "Degrees Minutes Seconds":
             if (isPair) {
@@ -156,7 +149,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                 if (splitLat.length >= 3 && splitLong.length >= 3) {
                     lat = convDMSToDD(splitLat[0], splitLat[1], splitLat[2], 10);
                     lon = convDMSToDD(splitLong[0], splitLong[1], splitLong[2], 10);
-                    latlon = new LatLonEllipsoidal(lat.degrees, lon.degrees);
+                    latlon = new LatLonMgrs(lat.degrees, lon.degrees);
                 } else {
                     throw new OperationError("Invalid co-ordinate format for Degrees Minutes Seconds");
                 }
@@ -165,7 +158,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                 splitLat = splitInput(split[0]);
                 if (splitLat.length >= 3) {
                     lat = convDMSToDD(splitLat[0], splitLat[1], splitLat[2]);
-                    latlon = new LatLonEllipsoidal(lat.degrees, lat.degrees);
+                    latlon = new LatLonMgrs(lat.degrees, lat.degrees);
                 } else {
                     throw new OperationError("Invalid co-ordinate format for Degrees Minutes Seconds");
                 }
@@ -181,7 +174,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                 // Convert to decimal degrees, and then convert to a geodesy object
                 lat = convDDMToDD(splitLat[0], splitLat[1], 10);
                 lon = convDDMToDD(splitLong[0], splitLong[1], 10);
-                latlon = new LatLonEllipsoidal(lat.degrees, lon.degrees);
+                latlon = new LatLonMgrs(lat.degrees, lon.degrees);
             } else {
                 // Not a pair, so only try to convert one set of co-ordinates
                 splitLat = splitInput(input);
@@ -189,7 +182,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                     throw new OperationError("Invalid co-ordinate format for Degrees Decimal Minutes.");
                 }
                 lat = convDDMToDD(splitLat[0], splitLat[1], 10);
-                latlon = new LatLonEllipsoidal(lat.degrees, lat.degrees);
+                latlon = new LatLonMgrs(lat.degrees, lat.degrees);
             }
             break;
         case "Decimal Degrees":
@@ -199,14 +192,14 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
                 if (splitLat.length !== 1 || splitLong.length !== 1) {
                     throw new OperationError("Invalid co-ordinate format for Decimal Degrees.");
                 }
-                latlon = new LatLonEllipsoidal(splitLat[0], splitLong[0]);
+                latlon = new LatLonMgrs(splitLat[0], splitLong[0]);
             } else {
                 // Not a pair, so only try to convert one set of co-ordinates
                 splitLat = splitInput(split[0]);
                 if (splitLat.length !== 1) {
                     throw new OperationError("Invalid co-ordinate format for Decimal Degrees.");
                 }
-                latlon = new LatLonEllipsoidal(splitLat[0], splitLat[0]);
+                latlon = new LatLonMgrs(splitLat[0], splitLat[0]);
             }
             break;
         default:
@@ -261,7 +254,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
             convLat = geohash.encode(latlon.lat, latlon.lon, precision);
             break;
         case "Military Grid Reference System":
-            utm = latlon.toUtm();
+            utm = new LatLonMgrs(latlon.lat, latlon.lon).toUtm();
             mgrs = utm.toMgrs();
             // MGRS wants a precision that's an even number between 2 and 10
             if (precision % 2 !== 0) {
@@ -273,9 +266,12 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
             convLat = mgrs.toString(precision);
             break;
         case "Ordnance Survey National Grid":
-            osng = OsGridRef.latLonToOsGrid(latlon);
-            if (osng.toString() === "") {
-                throw new OperationError("Could not convert co-ordinates to OS National Grid. Are the co-ordinates in range?");
+            try {
+                osng = new LatLonOsGridRef(latlon.lat, latlon.lon).toOsGrid();
+            } catch (err) {
+                // v2 throws from the OsGridRef constructor for coordinates outside the
+                // national grid, where v1 handed back a reference that stringified to "".
+                throw new OperationError("Could not convert co-ordinates to OS National Grid. Are the co-ordinates in range?", {cause: err});
             }
             // OSNG wants a precision that's an even number between 2 and 10
             if (precision % 2 !== 0) {
@@ -287,7 +283,7 @@ export function convertCoordinates (input, inFormat, inDelim, outFormat, outDeli
             convLat = osng.toString(precision);
             break;
         case "Universal Transverse Mercator":
-            utm = latlon.toUtm();
+            utm = new LatLonMgrs(latlon.lat, latlon.lon).toUtm();
             convLat = utm.toString(precision);
             break;
     }
