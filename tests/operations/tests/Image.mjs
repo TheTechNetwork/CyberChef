@@ -244,7 +244,10 @@ TestRegister.addTests([
     {
         name: "View Bit Plane: malformed PNG",
         input: PNG_HEX.replace("49484452", "49424452"),
-        expectedOutput: "Error loading image. (Error: unrecognised content at end of stream)",
+        // What the operation must do is report the failure rather than throw; the text in
+        // the brackets is jimp's and has changed between patch releases of it, so match
+        // the part the operation itself is responsible for.
+        expectedMatch: /^Error loading image\. \(Error: .+\)$/,
         recipeConfig: [
             {
                 op: "From Hex",
