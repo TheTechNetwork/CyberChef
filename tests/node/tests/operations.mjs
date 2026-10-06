@@ -37,7 +37,6 @@ import chef from "../../../src/node/index.mjs";
 import TestRegister from "../../lib/TestRegister.mjs";
 import File from "../../../src/node/File.mjs";
 import MarkdownIt from "markdown-it";
-import Token from "markdown-it/lib/token.mjs";
 import RenderMarkdown from "../../../src/core/operations/RenderMarkdown.mjs";
 
 global.File = File;
@@ -1209,9 +1208,12 @@ ExifImageHeight: 57`);
         const md = new MarkdownIt();
         op.makeLinksOpenInNewTab(md);
 
-        const token = new Token("link_open", "a", 1);
-        token.attrs = [["href", "https://example.com"], ["target", "_self"]];
-        const tokens = [token];
+        // markdown-it 15 ships as a single bundle and no longer exposes lib/token.mjs,
+        // so ask the parser for a real link_open token rather than constructing one.
+        const tokens = md.parseInline("[example](https://example.com)", {})[0].children
+            .filter(t => t.type === "link_open");
+        assert.strictEqual(tokens.length, 1, "expected one link_open token");
+        tokens[0].attrSet("target", "_self");
 
         const rendered = md.renderer.rules.link_open(tokens, 0, {}, {}, md.renderer);
         assert.strictEqual(rendered, '<a href="https://example.com" target="_self">');
