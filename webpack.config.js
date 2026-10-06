@@ -99,11 +99,36 @@ module.exports = {
                     context: "node_modules/node-forge/dist",
                     from: "prime.worker.min.js",
                     to: "assets/forge/"
+                }, {
+                    // jq-web 0.6 is a WebAssembly build whose Emscripten glue resolves
+                    // jq.wasm relative to the script that loaded it, with no way to
+                    // override it - the module calls its own factory with no options. So
+                    // the file goes to the output root, next to ChefWorker.js.
+                    context: "node_modules/jq-web",
+                    from: "jq.wasm",
+                    to: "./"
                 }
             ]
         }),
         new ModifySourcePlugin({
             rules: [
+                {
+                    // jq-web invokes its own Emscripten factory at import time with no
+                    // options, so there is no way to tell it where jq.wasm went. Bundled,
+                    // its own path detection comes up empty and it aborts with
+                    // "Failed to execute 'open' on 'XMLHttpRequest': Invalid URL".
+                    // jq.wasm is copied to the output root, and self.docURL is how the
+                    // worker already locates copied assets - see the tesseract and
+                    // node-forge ones. self.location is not a usable base in here.
+                    test: /jq-web\/jq\.js$/,
+                    operations: [
+                        new ReplaceOperation(
+                            "once",
+                            "jq = jq().then(",
+                            "jq = jq({locateFile: (path) => (typeof self !== \"undefined\" && self.docURL ? self.docURL + \"/\" + path : path)}).then("
+                        )
+                    ]
+                },
                 {
                     // Fix toSpare(0) bug in Split.js by avoiding gutter accomodation
                     test: /split\.es\.js$/,
