@@ -127,6 +127,10 @@ module.exports = {
         // testOp(browser, "Derive PBKDF2 key", "test input", "test_output");
         // testOp(browser, "Detect File Type", "test input", "test_output");
         testOpHtml(browser, "Diff", "The cat sat on the mat\n\nThe mat cat on the sat", "ins:first-child", "mat", ["\\n\\n", "Word", true, true, false, false]);
+        // Disassemble ARM is the only operation backed by the capstone WebAssembly build,
+        // and Emscripten locates capstone.wasm differently in a bundle than it does under
+        // Node, so the Node tests cannot cover this path.
+        testOp(browser, "Disassemble ARM", "1e ff 2f e1", /bx\s+lr/, ["ARM (32-bit)", "ARM", "Little Endian", 0, false, false]);
         // testOp(browser, "Disassemble x86", "test input", "test_output");
         testOpImage(browser, "Dither Image", "files/Hitchhikers_Guide.jpeg");
     // testOp(browser, "Divide", "test input", "test_output");
