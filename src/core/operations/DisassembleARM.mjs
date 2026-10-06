@@ -7,7 +7,30 @@
 import Operation from "../Operation.mjs";
 import OperationError from "../errors/OperationError.mjs";
 import { isWorkerEnvironment } from "../Utils.mjs";
-import cs from "@alexaltea/capstone-js/dist/capstone.min.js";
+import MCapstone from "@alexaltea/capstone-js";
+
+// capstone-js v5 is a WebAssembly build: the package no longer ships the synchronous
+// dist/capstone.min.js asm.js bundle, and its entry point is an async factory that
+// resolves to the module.
+let capstoneModule = null;
+
+/**
+ * Loads the Capstone WebAssembly module, reusing the promise across runs since
+ * instantiating it is not cheap.
+ *
+ * @returns {Promise} resolves to the Capstone module
+ */
+function loadCapstone() {
+    if (capstoneModule === null) {
+        // Emscripten locates capstone.wasm relative to the script that loaded it, which in
+        // the browser is the bundle rather than the file webpack copied into assets/. Node
+        // finds it next to capstone.js on its own.
+        capstoneModule = MCapstone(isWorkerEnvironment() ?
+            {locateFile: (file) => `${self.docURL}/assets/capstone/${file}`} :
+            {});
+    }
+    return capstoneModule;
+}
 
 /**
  * Disassemble ARM operation
@@ -90,6 +113,8 @@ class DisassembleARM extends Operation {
         if (hexInput.length % 2 !== 0) {
             throw new OperationError("Invalid hexadecimal input. Length must be even.");
         }
+
+        const cs = await loadCapstone();
 
         // Convert hex string to byte array
         const bytes = [];

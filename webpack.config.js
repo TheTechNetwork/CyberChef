@@ -107,8 +107,18 @@ module.exports = {
                     context: "node_modules/jq-web",
                     from: "jq.wasm",
                     to: "./"
+                }, {
+                    context: "node_modules/@alexaltea/capstone-js/dist",
+                    from: "capstone.wasm",
+                    to: "assets/capstone/"
                 }
             ]
+        }),
+        // capstone-js's Emscripten glue requires "node:fs". Webpack resolves node:-prefixed
+        // specifiers as a URI scheme, before resolve.fallback is consulted, so strip the
+        // prefix and let the fallbacks below handle the bare name.
+        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+            resource.request = resource.request.replace(/^node:/, "");
         }),
         new ModifySourcePlugin({
             rules: [
