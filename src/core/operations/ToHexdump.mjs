@@ -112,8 +112,8 @@ class ToHexdump extends Operation {
             width = 14 + (w*4);
         let line = Math.floor(pos[0].start / w),
             offset = pos[0].start % w,
-            start = 0,
-            end = 0;
+            start,
+            end;
 
         pos[0].start = line*width + 10 + offset*3;
 
@@ -146,9 +146,7 @@ class ToHexdump extends Operation {
 
         // Set up multiple selections for ASCII
         const len = pos.length;
-        let lineNum = 0;
-        start = 0;
-        end = 0;
+        let lineNum;
         for (let i = 1; i < len; i++) {
             lineNum = Math.floor(pos[i].start / width);
             start = (((pos[i].start - (lineNum * width)) - 10) / 3) + (width - w -2) + (lineNum * width);

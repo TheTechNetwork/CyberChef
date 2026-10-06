@@ -115,8 +115,8 @@ export default class Stream {
     readBits(numBits, endianness="be") {
         if (this.position > this.length) return undefined;
 
-        let bitBuf = 0,
-            bitBufLen = 0;
+        let bitBuf,
+            bitBufLen;
 
         // Add remaining bits from current byte
         bitBuf = this.bytes[this.position++] & bitMask(this.bitPos);
@@ -140,7 +140,6 @@ export default class Stream {
                 bitBuf >>>= excess;
             else
                 bitBuf &= (1 << numBits) - 1;
-            bitBufLen -= excess;
             this.position--;
             this.bitPos = 8 - excess;
         }

@@ -48,7 +48,7 @@ class ChangeIPFormat extends Operation {
         const [inFormat, outFormat] = args,
             lines = input.split("\n");
         let output = "",
-            j = 0;
+            j;
 
         for (let i = 0; i < lines.length; i++) {
             if (lines[i] === "") continue;

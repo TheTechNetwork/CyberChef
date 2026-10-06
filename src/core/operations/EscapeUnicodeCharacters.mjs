@@ -56,7 +56,7 @@ class EscapeUnicodeCharacters extends Operation {
             [prefix, encodeAll, padding, uppercaseHex] = args;
 
         let output = "",
-            character = "";
+            character;
 
         for (let i = 0; i < input.length; i++) {
             character = input[i];

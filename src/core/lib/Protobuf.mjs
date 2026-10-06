@@ -129,7 +129,7 @@ class Protobuf {
             }
             this.updateMainMessageName();
         } catch (error) {
-            throw new Error("Schema " + error);
+            throw new Error("Schema " + error, {cause: error});
         }
     }
 

@@ -228,7 +228,7 @@ class ELFInfo extends Operation {
             }
             ehResult.push("Type:".padEnd(align) + eType);
 
-            let ISA = "";
+            let ISA;
             switch (stream.readInt(2, endianness)) {
                 case 0x0000:
                     ISA = "No specific instruction set";
@@ -696,7 +696,7 @@ class ELFInfo extends Operation {
             const shResult = [];
 
             const nameOffset = stream.readInt(4, endianness);
-            let type = "";
+            let type;
             const shType = stream.readInt(4, endianness);
             switch (true) {
                 case (shType === 0x00000001):
@@ -900,7 +900,7 @@ class ELFInfo extends Operation {
         result.push("=".repeat(align) + " Symbol Table " + "=".repeat(align));
 
         stream.moveTo(symtabOffset);
-        let elem = "";
+        let elem;
         for (let i = 0; i < (symtabSize / symtabEntSize); i++)
             if ((elem = getSymbols(stream)) !== "")
                 result.push("Symbol Name:".padEnd(align) + elem);

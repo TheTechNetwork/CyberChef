@@ -81,7 +81,7 @@ class PlistViewer extends Operation {
             if (!(input.length))
                 return;
 
-            let temp = "";
+            let temp;
             const origArr = arrCount;
             let currElem = input[0];
 
@@ -121,7 +121,7 @@ class PlistViewer extends Operation {
             // If there has been a new array then reset index.
             if (arrCount > origArr)
                 return printIt(input.slice(1), 0);
-            return printIt(input.slice(1), ++index);
+            return printIt(input.slice(1), index + 1);
         }
 
         input = input.split("\n").filter(e => e !== "");

@@ -56,7 +56,7 @@ class ToUNIXTimestamp extends Operation {
         const [units, treatAsUTC, showDateTime] = args,
             d = treatAsUTC ? moment.utc(input) : moment(input);
 
-        let result = "";
+        let result;
 
         if (units === "Seconds (s)") {
             result = d.unix();

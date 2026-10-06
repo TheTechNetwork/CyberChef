@@ -276,7 +276,7 @@ class Lorenz extends Operation {
         if (x5<1 || x5>23) throw new OperationError("Χ5 start must be between 1 and 23");
 
         // Initialise chosen wheel pattern
-        let chosenSetting = "";
+        let chosenSetting;
         if (pattern === "Custom") {
             const re = new RegExp("^[.xX]*$");
             if (lugs1.length !== 43 || !re.test(lugs1)) throw new OperationError("Ψ1 custom lugs must be 43 long and can only include . or x ");
@@ -380,7 +380,7 @@ class Lorenz extends Operation {
 
             const basicmotor = m37lug;
             let totalmotor;
-            let lim = 0;
+            let lim;
 
             p5[2] = p5[1];
             p5[1] = p5[0];

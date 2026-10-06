@@ -55,7 +55,7 @@ class JSONBeautify extends Operation {
         if (!input) return "";
 
         const [indentStr, sortBool] = args;
-        let json = null;
+        let json;
 
         try {
             json = JSON5.parse(input);

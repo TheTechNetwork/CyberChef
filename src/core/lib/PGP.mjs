@@ -21,7 +21,7 @@ const promisify = es6promisify.default ? es6promisify.default.promisify : es6pro
  */
 export const ASP = kbpgp.ASP({
     "progress_hook": info => {
-        let msg = "";
+        let msg;
 
         switch (info.what) {
             case "guess":

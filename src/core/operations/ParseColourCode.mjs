@@ -32,7 +32,7 @@ class ParseColourCode extends Operation {
      * @returns {html}
      */
     run(input, args) {
-        let m = null,
+        let m,
             r = 0, g = 0, b = 0, a = 1;
 
         // Read in the input

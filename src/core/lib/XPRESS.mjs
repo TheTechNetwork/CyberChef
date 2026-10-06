@@ -82,7 +82,7 @@ export function decompress(input) {
                 pending = -1;
             }
             if (nib === 15) {
-                let v = 0;
+                let v;
                 if (i >= input.length)
                     throw new OperationError("XPRESS: truncated raw length");
                 v = input[i++];
@@ -216,7 +216,7 @@ export function decompressHuffman(input, decompressedSize) {
         const hb = (sym - 256) >>> 4;
         let mlen = (sym - 256) & 15;
         if (mlen === 15) {
-            let v = 0;
+            let v;
             if (i >= input.length)
                 throw new OperationError("XPRESS: truncated raw length");
             v = input[i++];

@@ -1400,7 +1400,7 @@ class OutputWaiter {
         if (!options.length) return;
 
         const currentRecipeConfig = this.app.getRecipeConfig();
-        let msg = "",
+        let msg,
             newRecipeConfig;
 
         if (options[0].recipe.length) {

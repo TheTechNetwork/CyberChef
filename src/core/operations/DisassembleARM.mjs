@@ -106,7 +106,7 @@ class DisassembleARM extends Operation {
         }
 
         // Determine mode constant
-        let modeValue = cs.MODE_LITTLE_ENDIAN;
+        let modeValue;
 
         if (architecture === "ARM (32-bit)") {
             switch (mode) {

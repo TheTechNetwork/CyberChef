@@ -117,8 +117,7 @@ class FromBase85 extends Operation {
                 result.push(0, 0, 0, 0);
                 i++;
             } else {
-                let digits = [];
-                digits = input
+                const digits = input
                     .substr(i, 5)
                     .split("")
                     .map((chr, idx) => {

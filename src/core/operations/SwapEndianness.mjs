@@ -54,9 +54,9 @@ class SwapEndianness extends Operation {
         const [dataFormat, wordLength, padIncompleteWords] = args,
             result = [],
             words = [];
-        let i = 0,
-            j = 0,
-            data = [];
+        let i,
+            j,
+            data;
 
         if (wordLength <= 0) {
             throw new OperationError("Word length must be greater than 0");

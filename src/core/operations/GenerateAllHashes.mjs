@@ -138,7 +138,7 @@ class GenerateAllHashes extends Operation {
      * @returns {string}
      */
     executeAlgo(algo, inputType, params=[]) {
-        let digest = null;
+        let digest;
         switch (inputType) {
             case "arrayBuffer":
                 digest = algo.run(this.inputArrayBuffer, params);

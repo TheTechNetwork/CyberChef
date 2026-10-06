@@ -142,7 +142,7 @@ class IPv6TransitionAddresses extends Operation {
 	 */
         function unTransition(input) {
             let output = "";
-            let hextets = "";
+            let hextets;
 
             /**
 	     * 6to4

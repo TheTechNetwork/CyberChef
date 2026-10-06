@@ -22,7 +22,7 @@ import Utils from "../Utils.mjs";
  * @returns {string}
  */
 export function toJA4(bytes) {
-    let tlsr = {};
+    let tlsr;
     try {
         tlsr = parseTLSRecord(bytes);
         if (tlsr.handshake.value.handshakeType.value !== 0x01) {
@@ -165,7 +165,7 @@ export function toJA4(bytes) {
  * @returns {string}
  */
 export function toJA4S(bytes) {
-    let tlsr = {};
+    let tlsr;
     try {
         tlsr = parseTLSRecord(bytes);
         if (tlsr.handshake.value.handshakeType.value !== 0x02) {

@@ -77,7 +77,7 @@ class Recipe  {
                     op.disabled = o.disabled;
                     return op;
                 } catch (err) {
-                    throw new Error(`Failed to hydrate operation '${o.name}': ${err}`);
+                    throw new Error(`Failed to hydrate operation '${o.name}': ${err}`, {cause: err});
                 }
             }
         });
