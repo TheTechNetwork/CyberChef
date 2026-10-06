@@ -14,6 +14,13 @@
     "* 0-6 * * 5"
   ],
   "minimumReleaseAge": "2 days",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "platformAutomerge": false,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
   "rebaseWhen": "behind-base-branch",
   "labels": [
     "dependencies"
@@ -33,6 +40,19 @@
       "allowedVersions": "<1.6.1 || >1.6.1"
     },
     {
+      "description": "Every non-major update goes into one PR, and merges itself once CI is green. Separate PRs all rewrite package-lock.json, so merging any one of them put every other one into conflict, and the default limit of two new PRs an hour inside a weekly window meant the queue drained a few at a time. Majors stay as their own PRs and are never merged automatically - those are the ones that need reading.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest",
+        "pinDigest"
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "automerge": true
+    },
+    {
       "description": "Label major updates so they are obvious in review. This is a fork of gchq/CyberChef kept in sync by pull[bot], so every merge here is a local commit that upstream syncs have to merge around - a major that could equally be taken from upstream later is usually not worth carrying ourselves.",
       "matchUpdateTypes": [
         "major"
@@ -42,7 +62,7 @@
       ]
     },
     {
-      "description": "The @unabandoned forks this repository aliases its browser polyfills to. These are ours rather than gchq's, so nobody upstream will ever bump them, and their releases are how security fixes reach this bundle - CVE-2025-14505 in elliptic arrived this way. They skip the weekly window and the soak period accordingly. Both the alias targets and the local names they are installed under are listed, since which of the two Renovate reports for an aliased dependency has varied between versions.",
+      "description": "The @unabandoned forks this repository aliases its browser polyfills to. These are ours rather than gchq's, so nobody upstream will ever bump them, and their releases are how security fixes reach this bundle - CVE-2025-14505 in elliptic arrived this way. They skip the weekly window and the soak period accordingly. Both the alias targets and the local names they are installed under are listed, since which of the two Renovate reports for an aliased dependency has varied between versions. They keep their own group rather than joining the weekly non-major one, so a fix in one of them is never held back behind anything else; non-major ones merge themselves once CI is green, like the rest.",
       "matchPackageNames": [
         "@unabandoned/**",
         "crypto-browserify",
@@ -60,7 +80,9 @@
       "schedule": [
         "at any time"
       ],
-      "minimumReleaseAge": null
+      "minimumReleaseAge": null,
+      "groupName": "unabandoned polyfills",
+      "groupSlug": "unabandoned"
     }
   ]
 }
