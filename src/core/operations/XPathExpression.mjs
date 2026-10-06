@@ -50,11 +50,11 @@ class XPathExpression extends Operation {
 
         let doc;
         try {
+            // xmldom 0.9 replaced the errorHandler object with a single onError
+            // callback, and throws a TypeError if it is still given an object.
             doc = new xmldom.DOMParser({
-                errorHandler: {
-                    fatalError(e) {
-                        throw e;
-                    }
+                onError: (level, message) => {
+                    if (level === "fatalError") throw new Error(message);
                 }
             }).parseFromString(input, "application/xml");
         } catch (err) {

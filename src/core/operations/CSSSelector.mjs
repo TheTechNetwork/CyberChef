@@ -56,7 +56,11 @@ class CSSSelector extends Operation {
         }
 
         try {
-            dom = parser.parseFromString(input);
+            // xmldom 0.9 requires the mimeType. "application/xml" is what 0.8 applied by
+            // default for input without an HTML namespace, and keeps nwmatcher working -
+            // "text/html" puts elements in the XHTML namespace, which stops nwmatcher
+            // matching class and attribute selectors at all.
+            dom = parser.parseFromString(input, "application/xml");
         } catch (err) {
             throw new OperationError("Invalid input HTML.");
         }

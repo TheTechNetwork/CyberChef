@@ -1445,7 +1445,7 @@ export default Utils;
  * // returns ["One", "Two", "Three"]
  * ["One", "Two", "Three", "One"].unique();
  */
-Array.prototype.unique = function() {
+Object.defineProperty(Array.prototype, "unique", {enumerable: false, writable: true, configurable: true, value: function() {
     const u = {}, a = [];
     for (let i = 0, l = this.length; i < l; i++) {
         if (Object.prototype.hasOwnProperty.call(u, this[i])) {
@@ -1455,7 +1455,7 @@ Array.prototype.unique = function() {
         u[this[i]] = 1;
     }
     return a;
-};
+}});
 
 
 /**
@@ -1467,9 +1467,9 @@ Array.prototype.unique = function() {
  * // returns 7
  * [4,2,5,3,7].max();
  */
-Array.prototype.max = function() {
+Object.defineProperty(Array.prototype, "max", {enumerable: false, writable: true, configurable: true, value: function() {
     return Math.max.apply(null, this);
-};
+}});
 
 
 /**
@@ -1481,9 +1481,9 @@ Array.prototype.max = function() {
  * // returns 2
  * [4,2,5,3,7].min();
  */
-Array.prototype.min = function() {
+Object.defineProperty(Array.prototype, "min", {enumerable: false, writable: true, configurable: true, value: function() {
     return Math.min.apply(null, this);
-};
+}});
 
 
 /**
@@ -1495,11 +1495,11 @@ Array.prototype.min = function() {
  * // returns 21
  * [4,2,5,3,7].sum();
  */
-Array.prototype.sum = function() {
+Object.defineProperty(Array.prototype, "sum", {enumerable: false, writable: true, configurable: true, value: function() {
     return this.reduce(function (a, b) {
         return a + b;
     }, 0);
-};
+}});
 
 
 /**
@@ -1515,7 +1515,7 @@ Array.prototype.sum = function() {
  * // returns false
  * [1,2,3].equals([3,2,1]);
  */
-Array.prototype.equals = function(other) {
+Object.defineProperty(Array.prototype, "equals", {enumerable: false, writable: true, configurable: true, value: function(other) {
     if (!other) return false;
     let i = this.length;
     if (i !== other.length) return false;
@@ -1523,7 +1523,7 @@ Array.prototype.equals = function(other) {
         if (this[i] !== other[i]) return false;
     }
     return true;
-};
+}});
 
 
 /**
@@ -1536,9 +1536,9 @@ Array.prototype.equals = function(other) {
  * // returns 2
  * "Hello".count("l");
  */
-String.prototype.count = function(chr) {
+Object.defineProperty(String.prototype, "count", {enumerable: false, writable: true, configurable: true, value: function(chr) {
     return this.split(chr).length - 1;
-};
+}});
 
 
 /**
