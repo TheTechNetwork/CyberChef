@@ -3,9 +3,9 @@ description: 'Installs a pinned version of Chrome and links it for chromedriver'
 
 inputs:
   chrome-version:
-    description: 'Chrome version to install'
+    description: 'Chrome version to install. Defaults to the major version of the installed chromedriver package, which only drives the matching Chrome, so the two move together when Renovate bumps chromedriver.'
     required: false
-    default: '152'
+    default: ''
 
 runs:
   using: 'composite'
@@ -15,7 +15,11 @@ runs:
       run: |
         rm -rf chrome/
         rm -rf node_modules/chromedriver/lib/chromedriver/chrome
-        npx @puppeteer/browsers install chrome@${{ inputs.chrome-version }}
+        version="${{ inputs.chrome-version }}"
+        if [ -z "$version" ]; then
+          version=$(node -p "require('./node_modules/chromedriver/package.json').version.split('.')[0]")
+        fi
+        npx @puppeteer/browsers install "chrome@$version"
         chromepath=$(find "$(pwd)"/chrome/* -name chrome -print -quit)
         if [ -z "$chromepath" ]; then
           echo "Chrome binary not found after install under $(pwd)/chrome" >&2
