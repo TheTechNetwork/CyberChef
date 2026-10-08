@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
-    "github>unabandoned/renovate-config:abandoned-exclusions",
     "abandonments:recommended",
+    "github>unabandoned/renovate-config:abandoned-exclusions",
     "security:openssf-scorecard",
     ":enableVulnerabilityAlertsWithLabel(security)",
     "group:linters"
