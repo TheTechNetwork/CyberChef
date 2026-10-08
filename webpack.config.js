@@ -165,6 +165,7 @@ module.exports = {
             "path": require.resolve("path/"),
             "process": false,
             "stream": require.resolve("stream-browserify"),
+            "string_decoder": require.resolve("string_decoder/"),
             "tls": false,
             "url": require.resolve("url/"),
             "vm": false,
