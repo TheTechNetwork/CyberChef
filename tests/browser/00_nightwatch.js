@@ -71,7 +71,9 @@ module.exports = {
             .waitForElementVisible(op, 1000)
             .moveToElement(op, 10, 10)
             .useCss()
-            .waitForElementVisible(".popover-body code:last-of-type", 1000)
+            // The app is still busy finishing its start-up this early on, so the popover can
+            // take more than a second to fade in on a loaded CI runner
+            .waitForElementVisible(".popover-body code:last-of-type", 5000)
             .expect.element(".popover-body code:last-of-type").text.to.contain("\"Hello\" -- world...");
 
         browser
