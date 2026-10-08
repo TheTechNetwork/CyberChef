@@ -97,7 +97,7 @@
   },
   "dependencies": {
     "@alexaltea/capstone-js": "^5.0.0",
-    "@astronautlabs/amf": "npm:@unabandoned/amf@^0.0.7",
+    "@astronautlabs/amf": "npm:@unabandoned/amf@^0.0.8",
     "@blu3r4y/lzma": "^2.3.3",
     "@noble/hashes": "2.4.0",
     "@wavesenterprise/crypto-gost-js": "^2.1.0-RC1",
