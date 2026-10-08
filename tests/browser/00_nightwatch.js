@@ -69,7 +69,22 @@ module.exports = {
             .setValue("#search", "Escape Smart Characters")
             .useXpath()
             .waitForElementVisible(op, 1000)
+            .execute(function() {
+                window.__diag = [];
+                const li = document.querySelector("#search-results li");
+                ["mouseover", "mouseenter", "mouseleave", "mouseout"].forEach(t => li.addEventListener(t, e => window.__diag.push(t + " buttons=" + e.buttons + " t=" + Math.round(performance.now()))));
+                document.addEventListener("mousemove", e => { window.__last = [e.clientX, e.clientY]; });
+                window.__diag.push("liRect=" + JSON.stringify(li.getBoundingClientRect()) + " drag=" + window.app.manager.recipe.dragInProgress + " t=" + Math.round(performance.now()));
+                return true;
+            })
             .moveToElement(op, 10, 10)
+            .pause(1500)
+            .execute(function() {
+                const pts = window.__last || [];
+                const under = pts.length ? document.elementFromPoint(pts[0], pts[1]) : null;
+                const pops = [...document.querySelectorAll(".popover")].map(p => p.className + " disp=" + getComputedStyle(p).display + " op=" + getComputedStyle(p).opacity + " rect=" + JSON.stringify(p.getBoundingClientRect()));
+                return JSON.stringify({ev: window.__diag, last: pts, under: under && (under.tagName + "#" + under.id + "." + under.className), pops, inner: [window.innerWidth, window.innerHeight], ua: navigator.userAgent});
+            }, [], function(r) { console.log("POPOVER-DIAG " + r.value); })
             .useCss()
             .waitForElementVisible(".popover-body code:last-of-type", 1000)
             .expect.element(".popover-body code:last-of-type").text.to.contain("\"Hello\" -- world...");
