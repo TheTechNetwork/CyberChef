@@ -466,28 +466,29 @@ module.exports = {
         browser.expect.element("#output-text .chr-enc-value").text.that.equals("UTF-8");
 
         /* Try various encodings */
-        // These are not meant to be realistic encodings for this data
+        // These are not meant to be realistic encodings for this data.
+        // The output view is re-decoded just after the bake finishes, so wait for it to fill.
         utils.setInput(browser, CHINESE_CHARS, false);
         utils.setChrEnc(browser, "input", "UTF-8");
         utils.setChrEnc(browser, "output", "UTF-16LE");
         utils.bake(browser);
-        utils.expectOutput(browser, "\uB8E4\uE88D\u81A6\u81E6\uE690\u8C85\u80E3");
+        utils.expectOutput(browser, "\uB8E4\uE88D\u81A6\u81E6\uE690\u8C85\u80E3", true, 5000);
 
         utils.setChrEnc(browser, "output", "Simplified Chinese GBK");
         utils.bake(browser);
-        utils.expectOutput(browser, "\u6D93\u5D88\uFDFF\u93AD\u612D\u53A1\u9286\u0000");
+        utils.expectOutput(browser, "\u6D93\u5D88\uFDFF\u93AD\u612D\u53A1\u9286\u0000", true, 5000);
 
         utils.setChrEnc(browser, "input", "UTF-7");
         utils.bake(browser);
-        utils.expectOutput(browser, "+Tg0-+iYE-+YFA-+YUw-");
+        utils.expectOutput(browser, "+Tg0-+iYE-+YFA-+YUw-", true, 5000);
 
         utils.setChrEnc(browser, "input", "Traditional Chinese Big5");
         utils.bake(browser);
-        utils.expectOutput(browser, "\u3043\u74B6\uFDFF\u7A3A\uFDFF");
+        utils.expectOutput(browser, "\u3043\u74B6\uFDFF\u7A3A\uFDFF", true, 5000);
 
         utils.setChrEnc(browser, "output", "Windows-1251 Cyrillic");
         utils.bake(browser);
-        utils.expectOutput(browser, "\u00A4\u0408\u00ADn\u00AE\u0408\u00B7W\u040EC");
+        utils.expectOutput(browser, "\u00A4\u0408\u00ADn\u00AE\u0408\u00B7W\u040EC", true, 5000);
     },
 
     "Line endings": browser => {
