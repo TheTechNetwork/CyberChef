@@ -109,7 +109,7 @@ class StatusBarPanel {
      * Sets the character encoding
      * @param {Event} e
      */
-    chrEncSelectClick(e) {
+    async chrEncSelectClick(e) {
         // preventDefault is required to stop the URL being modified and popState being triggered
         e.preventDefault();
 
@@ -117,9 +117,13 @@ class StatusBarPanel {
 
         if (isNaN(chrEncVal)) return;
 
-        this.chrEncHandler(chrEncVal, true);
+        const changed = this.chrEncHandler(chrEncVal, true);
         this.updateCharEnc(chrEncVal);
         hideElement(e.target.closest(".cm-status-bar-select-content"));
+
+        // The handler may only apply the new encoding once it has loaded
+        await changed;
+        this.updateCharEnc(chrEncVal);
     }
 
     /**

@@ -6,7 +6,8 @@
  */
 
 import ChefWorker from "worker-loader?inline=no-fallback!../../core/ChefWorker.js";
-import DishWorker from "worker-loader?inline=no-fallback!../workers/DishWorker.mjs";
+// DishWorker loads chunks of its own, so their names must not clash with the ChefWorker's
+import DishWorker from "worker-loader?inline=no-fallback&chunkFilename=[id].dish.worker.js!../workers/DishWorker.mjs";
 import { debounce } from "../../core/Utils.mjs";
 
 /**
@@ -76,6 +77,13 @@ class WorkerWaiter {
             action: "setLogLevel",
             data: log.getLevel()
         });
+
+        let docURL = document.location.href.split(/[#?]/)[0];
+        const index = docURL.lastIndexOf("/");
+        if (index > 0) {
+            docURL = docURL.substring(0, index);
+        }
+        this.dishWorker.worker.postMessage({"action": "docURL", "data": docURL});
 
         if (this.dishWorkerQueue.length > 0) {
             this.postDishMessage(this.dishWorkerQueue.splice(0, 1)[0]);

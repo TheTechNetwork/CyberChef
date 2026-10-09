@@ -11,7 +11,7 @@ import HTMLCategory from "./HTMLCategory.mjs";
 import HTMLOperation from "./HTMLOperation.mjs";
 import Split from "split.js";
 import moment from "moment-timezone";
-import cptable from "codepage";
+import {loadCodepage} from "./utils/codepage.mjs";
 
 
 /**
@@ -489,7 +489,7 @@ class App {
      * @param {Object} params
      * @fires Manager#statechange
      */
-    loadURIParams(params=this.getURIParams()) {
+    async loadURIParams(params=this.getURIParams()) {
         this.uriParams = params;
 
         // Read in recipe from URI params
@@ -518,7 +518,7 @@ class App {
         // Input Character Encoding
         // Must be set before the input is loaded
         if (this.uriParams.ienc) {
-            this.manager.input.chrEncChange(parseInt(this.uriParams.ienc, 10), true, true);
+            await this.manager.input.chrEncChange(parseInt(this.uriParams.ienc, 10), true, true);
         }
 
         // Output Character Encoding
@@ -543,6 +543,7 @@ class App {
                 const inputChrEnc = this.manager.input.getChrEnc();
                 const inputData = fromBase64(this.uriParams.input, null, "byteArray");
                 if (inputChrEnc > 0) {
+                    const cptable = await loadCodepage();
                     inputVal = cptable.utils.decode(inputChrEnc, inputData);
                 } else {
                     inputVal = Utils.byteArrayToChars(inputData);

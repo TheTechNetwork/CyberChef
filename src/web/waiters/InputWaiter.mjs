@@ -9,7 +9,7 @@ import LoaderWorker from "worker-loader?inline=no-fallback!../workers/LoaderWork
 import InputWorker from "worker-loader?inline=no-fallback!../workers/InputWorker.mjs";
 import Utils, {debounce} from "../../core/Utils.mjs";
 import {toBase64} from "../../core/lib/Base64.mjs";
-import cptable from "codepage";
+import {loadCodepage} from "../utils/codepage.mjs";
 
 import {
     EditorView,
@@ -62,6 +62,7 @@ class InputWaiter {
 
         this.inputTextEl = document.getElementById("input-text");
         this.inputChrEnc = 0;
+        this.pendingChrEnc = 0;
         this.eolState = 0; // 0 = unset, 1 = detected, 2 = manual
         this.encodingState = 0; // 0 = unset, 1 = detected, 2 = manual
         this.initEditor();
@@ -236,8 +237,13 @@ class InputWaiter {
      * @param {boolean} [manual=false] - Flag to indicate the encoding was set by the user
      * @param {boolean} [internal=false] - Flag to indicate this was set internally, i.e. by loading from URI
      */
-    chrEncChange(chrEncVal, manual=false, internal=false) {
+    async chrEncChange(chrEncVal, manual=false, internal=false) {
         if (typeof chrEncVal !== "number") return;
+        // Make sure the encoding can be used before switching to it
+        this.pendingChrEnc = chrEncVal;
+        if (chrEncVal > 0) await loadCodepage();
+        // Ignore this change if another one was requested while loading
+        if (this.pendingChrEnc !== chrEncVal) return;
         this.inputChrEnc = chrEncVal;
         this.encodingState = manual ? 2 : this.encodingState;
         if (!internal) {
@@ -618,7 +624,7 @@ class InputWaiter {
      * @param {boolean} [silent=false] - If false, fires the manager statechange event
      */
     async set(inputNum, inputData, silent=false) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(async function(resolve, reject) {
             const activeTab = this.manager.tabs.getActiveTab("input");
             if (inputNum !== activeTab) {
                 this.changeTab(inputNum, this.app.options.syncTabs);
@@ -646,6 +652,7 @@ class InputWaiter {
             this.manager.timing.recordTime("inputEncodingStart", inputNum);
             let inputVal;
             if (this.getChrEnc() > 0) {
+                const cptable = await loadCodepage();
                 inputVal = cptable.utils.decode(this.inputChrEnc, new Uint8Array(inputData.buffer));
             } else {
                 inputVal = Utils.arrayBufferToStr(inputData.buffer);
@@ -775,7 +782,7 @@ class InputWaiter {
      * @param {number} inputNum
      * @param {string | ArrayBuffer} value
      */
-    updateInputValue(inputNum, value, force=false) {
+    async updateInputValue(inputNum, value, force=false) {
         // Prepare the value as a buffer (full value) and a string sample (up to 4096 bytes)
         let buffer;
         let stringSample;
@@ -786,6 +793,7 @@ class InputWaiter {
         if (typeof value === "string") {
             stringSample = value.slice(0, 4096);
             if (this.getChrEnc() > 0) {
+                const cptable = await loadCodepage();
                 buffer = cptable.utils.encode(this.getChrEnc(), value);
                 buffer = new Uint8Array(buffer).buffer;
             } else {

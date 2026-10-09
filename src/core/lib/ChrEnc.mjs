@@ -6,8 +6,6 @@
  * @license Apache-2.0
  */
 
-import cptable from "codepage";
-
 /**
  * Character encoding format mappings.
  */
@@ -179,6 +177,28 @@ for (const name in CHR_ENC_CODE_PAGES) {
 
 
 /**
+ * Code pages whose characters are at least two bytes wide.
+ * Precomputed from the codepage package's tables so that measuring a width
+ * does not require that (very large) package to be loaded.
+ */
+const DOUBLE_BYTE_CHR_ENCS = [
+    1200, 1201, 932, 936, 949, 950, 1361, 10001, 10002, 10003, 10008,
+    20000, 20001, 20002, 20003, 20004, 20005, 20261, 20932, 20936, 20949,
+    51932, 51936, 51949, 52936, 54936,
+    57002, 57003, 57004, 57005, 57006, 57007, 57008, 57009, 57010, 57011
+];
+
+/**
+ * Code pages whose characters are four bytes wide.
+ */
+const QUAD_BYTE_CHR_ENCS = [12000, 12001];
+
+/**
+ * Code pages which the codepage package cannot encode or decode.
+ */
+const UNSUPPORTED_CHR_ENCS = [50220, 50221, 50222, 50225, 50227];
+
+/**
  * Returns the width of the character set for the given codepage.
  * For example, UTF-8 is a Single Byte Character Set, whereas
  * UTF-16 is a Double Byte Character Set.
@@ -197,24 +217,10 @@ export function chrEncWidth(page) {
     if (!Object.prototype.hasOwnProperty.call(CHR_ENC_SIMPLE_REVERSE_LOOKUP, pageStr))
         return 0;
 
-    // Statically defined code pages
-    if (Object.prototype.hasOwnProperty.call(cptable, pageStr))
-        return cptable[pageStr].dec.length > 256 ? 2 : 1;
-
-    // Cached code pages
-    if (cptable.utils.cache.sbcs.includes(pageStr))
-        return 1;
-    if (cptable.utils.cache.dbcs.includes(pageStr))
-        return 2;
-
-    // Dynamically generated code pages
-    if (Object.prototype.hasOwnProperty.call(cptable.utils.magic, pageStr)) {
-        // Generate a single character and measure it
-        const a = cptable.utils.encode(page, "a");
-        return a.length;
-    }
-
-    return 0;
+    if (UNSUPPORTED_CHR_ENCS.includes(page)) return 0;
+    if (QUAD_BYTE_CHR_ENCS.includes(page)) return 4;
+    if (DOUBLE_BYTE_CHR_ENCS.includes(page)) return 2;
+    return 1;
 }
 
 /**

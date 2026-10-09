@@ -9,7 +9,13 @@ import OperationError from "../errors/OperationError.mjs";
 import Utils from "../Utils.mjs";
 import { fromHex } from "../lib/Hex.mjs";
 import { fromBase64 } from "../lib/Base64.mjs";
-import cptable from "codepage";
+
+/**
+ * ISO-8859 parts for which the TextDecoder mapping is identical to the codepage
+ * package's. Parts 1, 9 and 11 are aliased to Windows code pages by TextDecoder,
+ * and parts 12 and 16 are not supported by every TextDecoder implementation.
+ */
+const TEXT_DECODER_ISO_8859_PARTS = [2, 3, 4, 5, 6, 7, 8, 10, 13, 14, 15];
 
 /**
  * MIME Decoding operation
@@ -36,11 +42,11 @@ class MIMEDecoding extends Operation {
      * @param {Object[]} args
      * @returns {string}
      */
-    run(input, args) {
+    async run(input, args) {
         const mimeEncodedText = Utils.byteArrayToUtf8(input);
         const encodedHeaders = mimeEncodedText.replace(/\r\n/g, "\n");
 
-        const decodedHeader = this.decodeHeaders(encodedHeaders);
+        const decodedHeader = await this.decodeHeaders(encodedHeaders);
 
         return decodedHeader;
     }
@@ -50,7 +56,7 @@ class MIMEDecoding extends Operation {
      *
      * @param headerString
      */
-    decodeHeaders(headerString) {
+    async decodeHeaders(headerString) {
         // No encoded words detected
         let i = headerString.indexOf("=?");
         if (i === -1) return headerString;
@@ -100,7 +106,7 @@ class MIMEDecoding extends Operation {
                 decodedHeaders += header.slice(0, start);
             }
 
-            decodedHeaders += this.convertFromCharset(charset, text);
+            decodedHeaders += await this.convertFromCharset(charset, text);
 
             header = header.slice(end);
             isBetweenWords = true;
@@ -119,22 +125,68 @@ class MIMEDecoding extends Operation {
      *
      * @param encodedWord
      */
-    convertFromCharset(charset, encodedText) {
+    async convertFromCharset(charset, encodedText) {
         charset = charset.toLowerCase();
         const parsedCharset = charset.split("-");
+        let page;
 
         if (parsedCharset.length === 2 && parsedCharset[0] === "utf" && charset === "utf-8") {
-            return cptable.utils.decode(65001, encodedText);
+            page = 65001;
         } else if (parsedCharset.length === 2 && charset === "us-ascii") {
-            return cptable.utils.decode(20127, encodedText);
+            page = 20127;
         } else if (parsedCharset.length === 3 && parsedCharset[0] === "iso" && parsedCharset[1] === "8859") {
             const isoCharset = parseInt(parsedCharset[2], 10);
             if (isoCharset >= 1 && isoCharset <= 16) {
-                return cptable.utils.decode(28590 + isoCharset, encodedText);
+                page = 28590 + isoCharset;
             }
         }
 
-        throw new OperationError("Unhandled Charset");
+        if (page === undefined) throw new OperationError("Unhandled Charset");
+
+        const decoded = this.decodeWithoutCodepage(page, encodedText);
+        if (decoded !== null) return decoded;
+
+        // The codepage package is large, so it is only loaded for input that
+        // the built-in decoders cannot be relied upon to handle identically.
+        const cptable = (await import("codepage")).default;
+        return cptable.utils.decode(page, encodedText);
+    }
+
+    /**
+     * Decodes text without the codepage package where the result is known to be
+     * identical to the one it would give.
+     *
+     * @param {number} page
+     * @param {string|byteArray} encodedText
+     * @returns {string|null} - null if the codepage package is needed
+     */
+    decodeWithoutCodepage(page, encodedText) {
+        const bytes = typeof encodedText === "string" ?
+            encodedText.split("").map(c => c.charCodeAt(0)) :
+            encodedText;
+        if (bytes.some(b => b > 0xFF)) return null;
+
+        if (page === 20127) {
+            return Utils.byteArrayToChars(bytes);
+        } else if (page === 65001) {
+            try {
+                return new TextDecoder("utf-8", {fatal: true}).decode(new Uint8Array(bytes));
+            } catch (err) {
+                return null;
+            }
+        }
+
+        // The codepage package treats a null byte as the first half of a
+        // two-byte sequence in single-byte code pages
+        if (bytes.includes(0)) return null;
+
+        const isoPart = page - 28590;
+        if (isoPart === 1) {
+            return Utils.byteArrayToChars(bytes);
+        } else if (TEXT_DECODER_ISO_8859_PARTS.includes(isoPart)) {
+            return new TextDecoder(`iso-8859-${isoPart}`).decode(new Uint8Array(bytes));
+        }
+        return null;
     }
 
     /**
