@@ -36,7 +36,6 @@
  import GostRandom from './gostRandom.mjs';
  import GostDigest from './gostDigest.mjs';
 
- import crypto from 'crypto';
 
     /*
      * Predefined curves and params collection
@@ -48,7 +47,7 @@
      */ // <editor-fold defaultstate="collapsed">
 
 var root = {};
-var rootCrypto = crypto;
+var rootCrypto = globalThis.crypto;
 var CryptoOperationData = ArrayBuffer;
 
 var OperationError = Error,

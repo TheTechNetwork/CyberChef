@@ -35,7 +35,6 @@
 import GostRandom from './gostRandom.mjs';
 import gostEngine from './gostEngine.mjs';
 
-import crypto from 'crypto'
 
 /*
 * Algorithm normalization
@@ -45,7 +44,7 @@ import crypto from 'crypto'
 var root = {};
 root.gostEngine = gostEngine;
 
-var rootCrypto = crypto
+var rootCrypto = globalThis.crypto;
 
 var SyntaxError = Error,
         DataError = Error,

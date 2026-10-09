@@ -5,7 +5,6 @@
  */
 
 import Operation from "../Operation.mjs";
-import crypto from "crypto";
 import { encode } from "../lib/CipherSaber2.mjs";
 import Utils from "../Utils.mjs";
 
@@ -53,7 +52,7 @@ class CipherSaber2Encrypt extends Operation {
             rounds = args[1];
 
         // Assign into initialisation vector based on cipher mode.
-        const tempIVP = crypto.randomBytes(10);
+        const tempIVP = crypto.getRandomValues(new Uint8Array(10));
         for (let m = 0; m < 10; m++)
             result.push(tempIVP[m]);
 

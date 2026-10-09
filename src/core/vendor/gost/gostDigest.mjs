@@ -38,7 +38,6 @@
 
  import GostRandom from './gostRandom.mjs';
  import GostCipher from './gostCipher.mjs';
- import crypto from 'crypto';
 
 /*
     * GOST R 34.11
@@ -47,7 +46,7 @@
     */ // <editor-fold defaultstate="collapsed">
 
 var root = {};
-var rootCrypto = crypto
+var rootCrypto = globalThis.crypto;
 
 var DataError = Error,
         NotSupportedError = Error;

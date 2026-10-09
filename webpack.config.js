@@ -120,6 +120,13 @@ module.exports = {
         new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
             resource.request = resource.request.replace(/^node:/, "");
         }),
+        // jq-web only requires "crypto" on its Node code path, and js-ascon only when
+        // there is no global crypto. Neither branch runs in a browser, so don't pull the
+        // crypto-browserify fallback into their chunks for it.
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^crypto$/,
+            contextRegExp: /jq-web|js-ascon/
+        }),
         new ModifySourcePlugin({
             rules: [
                 {

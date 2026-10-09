@@ -7,7 +7,8 @@
 import Operation from "../Operation.mjs";
 import Utils from "../Utils.mjs";
 import OperationError from "../errors/OperationError.mjs";
-import scryptsy from "scryptsy";
+import { scrypt } from "@noble/hashes/scrypt.js";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { isWorkerEnvironment } from "../Utils.mjs";
 
 /**
@@ -63,23 +64,30 @@ class Scrypt extends Operation {
      * @returns {string}
      */
     run(input, args) {
-        const salt = Buffer.from(Utils.convertToByteArray(args[0].string || "", args[0].option)),
+        const salt = new Uint8Array(Utils.convertToByteArray(args[0].string || "", args[0].option)),
             iterations = args[1],
             memFactor = args[2],
             parallelFactor = args[3],
             keyLength = args[4];
 
         try {
-            const data = scryptsy(
-                input, salt, iterations, memFactor, parallelFactor, keyLength,
-                p => {
-                    // Progress callback
-                    if (isWorkerEnvironment())
-                        self.sendStatusMessage(`Progress: ${p.percent.toFixed(0)}%`);
+            let lastPercent = -1;
+            const data = scrypt(input, salt, {
+                N: iterations,
+                r: memFactor,
+                p: parallelFactor,
+                dkLen: keyLength,
+                maxmem: Number.MAX_SAFE_INTEGER,
+                onProgress: progress => {
+                    const percent = Math.floor(progress * 100);
+                    if (percent !== lastPercent && isWorkerEnvironment()) {
+                        lastPercent = percent;
+                        self.sendStatusMessage(`Progress: ${percent}%`);
+                    }
                 }
-            );
+            });
 
-            return data.toString("hex");
+            return bytesToHex(data);
         } catch (err) {
             throw new OperationError("Error: " + err.toString());
         }
