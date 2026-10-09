@@ -34,7 +34,6 @@
 
 import GostRandom from './gostRandom.mjs';
 
-import crypto from 'crypto'
 
 /*
 * Initial parameters and common algortithms of GOST 28147-89
@@ -44,7 +43,7 @@ import crypto from 'crypto'
 */ // <editor-fold defaultstate="collapsed">
 
 var root = {};
-var rootCrypto = crypto;
+var rootCrypto = globalThis.crypto;
 var CryptoOperationData = ArrayBuffer;
 var SyntaxError = Error,
         DataError = Error,

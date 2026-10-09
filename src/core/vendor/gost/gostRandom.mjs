@@ -31,7 +31,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-import crypto from 'crypto';
 
 
 /**
@@ -44,7 +43,7 @@ import crypto from 'crypto';
  */ // <editor-fold defaultstate="collapsed">
 
 var root = {};
-var rootCrypto = crypto;
+var rootCrypto = globalThis.crypto;
 
 var TypeMismatchError = Error;
 var QuotaExceededError = Error;

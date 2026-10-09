@@ -4,9 +4,8 @@
  * @license Apache-2.0
  */
 import Operation from "../Operation.mjs";
-import jwt from "jsonwebtoken";
 import OperationError from "../errors/OperationError.mjs";
-import {JWT_ALGORITHMS} from "../lib/JWT.mjs";
+import {JWT_ALGORITHMS, verifyJWT} from "../lib/JWT.mjs";
 
 
 /**
@@ -42,17 +41,10 @@ class JWTVerify extends Operation {
      */
     run(input, args) {
         const [key] = args;
-        const algos = JWT_ALGORITHMS;
-        algos[algos.indexOf("None")] = "none";
+        const algos = JWT_ALGORITHMS.map(algo => algo === "None" ? "none" : algo);
 
         try {
-            const verified = jwt.verify(input, key, { algorithms: algos });
-
-            if (Object.prototype.hasOwnProperty.call(verified, "name") && verified.name === "JsonWebTokenError") {
-                throw new OperationError(verified.message);
-            }
-
-            return verified;
+            return verifyJWT(input, key, algos);
         } catch (err) {
             throw new OperationError(err);
         }

@@ -4,9 +4,8 @@
  * @license Apache-2.0
  */
 import Operation from "../Operation.mjs";
-import jwt from "jsonwebtoken";
 import OperationError from "../errors/OperationError.mjs";
-import {JWT_ALGORITHMS} from "../lib/JWT.mjs";
+import {JWT_ALGORITHMS, signJWT} from "../lib/JWT.mjs";
 
 
 /**
@@ -54,10 +53,7 @@ class JWTSign extends Operation {
         const [key, algorithm, header] = args;
 
         try {
-            return jwt.sign(input, key, {
-                algorithm: algorithm === "None" ? "none" : algorithm,
-                header: JSON.parse(header || "{}")
-            });
+            return signJWT(input, key, algorithm === "None" ? "none" : algorithm, JSON.parse(header || "{}"));
         } catch (err) {
             throw new OperationError(`Error: Have you entered the key correctly? The key should be either the secret for HMAC algorithms or the PEM-encoded private key for RSA and ECDSA.
 
