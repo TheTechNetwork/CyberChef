@@ -9,7 +9,7 @@ import LoaderWorker from "worker-loader?inline=no-fallback!../workers/LoaderWork
 import InputWorker from "worker-loader?inline=no-fallback!../workers/InputWorker.mjs";
 import Utils, {debounce} from "../../core/Utils.mjs";
 import {toBase64} from "../../core/lib/Base64.mjs";
-import {loadCodepage} from "../utils/codepage.mjs";
+import {loadCodepage, getLoadedCodepage} from "../utils/codepage.mjs";
 
 import {
     EditorView,
@@ -241,7 +241,7 @@ class InputWaiter {
         if (typeof chrEncVal !== "number") return;
         // Make sure the encoding can be used before switching to it
         this.pendingChrEnc = chrEncVal;
-        if (chrEncVal > 0) await loadCodepage();
+        if (chrEncVal > 0 && getLoadedCodepage() === null) await loadCodepage();
         // Ignore this change if another one was requested while loading
         if (this.pendingChrEnc !== chrEncVal) return;
         this.inputChrEnc = chrEncVal;
@@ -652,7 +652,7 @@ class InputWaiter {
             this.manager.timing.recordTime("inputEncodingStart", inputNum);
             let inputVal;
             if (this.getChrEnc() > 0) {
-                const cptable = await loadCodepage();
+                const cptable = getLoadedCodepage() || await loadCodepage();
                 inputVal = cptable.utils.decode(this.inputChrEnc, new Uint8Array(inputData.buffer));
             } else {
                 inputVal = Utils.arrayBufferToStr(inputData.buffer);
@@ -782,7 +782,15 @@ class InputWaiter {
      * @param {number} inputNum
      * @param {string | ArrayBuffer} value
      */
-    async updateInputValue(inputNum, value, force=false) {
+    updateInputValue(inputNum, value, force=false) {
+        // Callers rely on the new value being posted to the inputWorker before
+        // anything they post afterwards, so only defer if the codepage package
+        // is needed and somehow has not been loaded yet.
+        if (typeof value === "string" && this.getChrEnc() > 0 && getLoadedCodepage() === null) {
+            loadCodepage().then(() => this.updateInputValue(inputNum, value, force));
+            return;
+        }
+
         // Prepare the value as a buffer (full value) and a string sample (up to 4096 bytes)
         let buffer;
         let stringSample;
@@ -793,7 +801,7 @@ class InputWaiter {
         if (typeof value === "string") {
             stringSample = value.slice(0, 4096);
             if (this.getChrEnc() > 0) {
-                const cptable = await loadCodepage();
+                const cptable = getLoadedCodepage();
                 buffer = cptable.utils.encode(this.getChrEnc(), value);
                 buffer = new Uint8Array(buffer).buffer;
             } else {

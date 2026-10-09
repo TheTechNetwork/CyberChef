@@ -11,7 +11,7 @@ import HTMLCategory from "./HTMLCategory.mjs";
 import HTMLOperation from "./HTMLOperation.mjs";
 import Split from "split.js";
 import moment from "moment-timezone";
-import {loadCodepage} from "./utils/codepage.mjs";
+import {loadCodepage, getLoadedCodepage} from "./utils/codepage.mjs";
 
 
 /**
@@ -543,7 +543,7 @@ class App {
                 const inputChrEnc = this.manager.input.getChrEnc();
                 const inputData = fromBase64(this.uriParams.input, null, "byteArray");
                 if (inputChrEnc > 0) {
-                    const cptable = await loadCodepage();
+                    const cptable = getLoadedCodepage() || await loadCodepage();
                     inputVal = cptable.utils.decode(inputChrEnc, inputData);
                 } else {
                     inputVal = Utils.byteArrayToChars(inputData);
