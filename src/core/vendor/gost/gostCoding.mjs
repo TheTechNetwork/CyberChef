@@ -43,7 +43,6 @@ import gostCrypto from './gostCrypto.mjs';
 var root = {};
 var DataError = Error;
 var CryptoOperationData = ArrayBuffer;
-var Date = Date;
 
 function buffer(d) {
     if (d instanceof CryptoOperationData)
