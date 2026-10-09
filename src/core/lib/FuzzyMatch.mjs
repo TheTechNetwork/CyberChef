@@ -133,13 +133,14 @@ function fuzzyMatchRecursive(
                 firstMatch = false;
             }
 
+            // The recursive call fills its own match buffer, seeded from ours, and returns it
             const [matched, recursiveScore, recursiveMatches] = fuzzyMatchRecursive(
                 pattern,
                 str,
                 patternCurIndex,
                 strCurrIndex + 1,
                 matches,
-                recursiveMatches,
+                [],
                 maxMatches,
                 nextMatch,
                 recursionCount,

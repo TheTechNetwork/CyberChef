@@ -34,8 +34,8 @@
   },
   "bugs": "https://github.com/gchq/CyberChef/issues",
   "browserslist": [
-    "Chrome >= 50",
-    "Firefox >= 38",
+    "Chrome >= 112",
+    "Firefox >= 116",
     "node >= 24"
   ],
   "devDependencies": {
