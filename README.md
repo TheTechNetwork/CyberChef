@@ -164,8 +164,8 @@ Supported arguments are `recipe`, `input` (encoded in Base64), and `theme`.
 
 CyberChef is built to support
 
- - Google Chrome 50+
- - Mozilla Firefox 38+
+ - Google Chrome 112+
+ - Mozilla Firefox 116+
 
 
 ## Node.js support
