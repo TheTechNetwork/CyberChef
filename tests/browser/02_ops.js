@@ -15,6 +15,49 @@
 
 const utils = require("./browserUtils.js");
 
+// JWT fixtures. RS256 (PKCS#1 v1.5) signatures are deterministic, so the
+// signed token can be compared exactly.
+const JWT_PAYLOAD = '{"String":"SomeString","Number":42,"iat":1}';
+const JWT_PAYLOAD_OUTPUT = JSON.stringify(JSON.parse(JWT_PAYLOAD), null, 4);
+const JWT_HS256 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTdHJpbmciOiJTb21lU3RyaW5nIiwiTnVtYmVyIjo0MiwiaWF0IjoxfQ.0ha6-j4FwvEIKPVZ-hf3S_R9Hy_UtXzq4dnedXcUrXk";
+const JWT_RS256 = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJTdHJpbmciOiJTb21lU3RyaW5nIiwiTnVtYmVyIjo0MiwiaWF0IjoxfQ.W4MezVlIsgdZBnY0501Ip3rjPQ4JFBir4AaSKRgrnDMd0ah-XLPfDDt2MNbw9dj1bZeZBPcV0122iAaWD4hauGXEqBqakncV6bhrxmjuxJguqvSbEC-zhErn6cDLQX-seuRkHzWg8Slvf2yr9x-Ga8sZcwWy_268Yhup1802haBWKgWfGPZqXYQ4sTMBHt9L33Xrq_riCC_3F6Xj8i-X1feRlKq-byQW-TvpewAYCm1-0MZqUwTLQ01wMDb6HRpb_JeiKmcjq-d_ADNycGRvZN-e9DDGUrChDrgrda8-9hj_DI9U2u96GyPE2kuTRvTRlhaaWVUnQe_YZlXSIwdT4g";
+const JWT_RSA_PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAk0VOoksAblwP82DALTG6xGC86Hfho3nChbcPGWyqn+ScfHBF
+cg3SeKyy6aWCyLcKfNwE5cPYzuYvVBsZyIrdfFOuV90D/aRYbuw6UkKR3cmmy9qE
+qvu05dogvc0BcmkwbC37Q8JnsZBRcosoLGgTFxcK+LXdsG7DukajpsGesxQjOLb2
+1jnx+ypzx74xvj7grqlXkxeDKr22q7QkO3A1ApoOuJRAU+SjEEZmqdXzRery2RWx
+hkWbCXuQw4PnW5Lh3Wwabnu7XKVIa6wJa1pqL2IAxmlZ0bvGTfjtO5ggNfgJk5V4
+bGSOXnsplpG71AWMrK2q6NqHjFIE1szEycUKrwIDAQABAoIBAAivyt6Zy/G2g8kC
+852hfvcRubLV92eRdAmNGFqTOqaUcS00i3QZyp4MRGqxtOV/88y/nEOtP1RHkZJw
+HXTjHq4JsDvwhnQR8JbCX6z1zkLQdS01u3jrwJTaPpooxdATfPlfO6CYjqM+SapB
+o7dS1ZAZb4U8vPx+MWoDEVNxvO7/xyqho1Oc4H9MwqQUiyG2WfIoqxLSrBYcambv
+RmySwTIpgQZTr61EeWf/0eWpV0iEYbSnkB/VaKW+5tg4gCjPgy5v6/LQ0u/pzlYz
+ayCL3xN2rp0tigXsiiWz3cM5gDsnatK4nVNRs9y3JSZpWpI236ZfZjs8Lts+WBUw
+hAEoE9kCgYEAyEIGD1A7R/t5EYk5HhHDH5tGdyxejAcQL5AIz0YnTZU8Iixyc7FR
+uDmAMiuKIcJY/nUlxZjSxNc3MkOfZNggQvf9ONrt+ftQ1yyTjv+019NfU4w4d0Ep
+LNaiAHgaPKimBUZjYXbLgiMXj/1pBaQmgUYTK/VlO3PVdowxxzxMYlMCgYEAvEOG
+GrhVaQV1nAYx86BgZ3wn90hBFXZWGaN+eXUmyrast93Ih3TCSgQDKPuN3pdv/TIe
+cpQv/BxEMpW+6d5Z1NP3GbrLpaZUiUNk8fqw1S3pmD5aWZrYIUaNukAyOxnZVgjv
+EWD9QTpI663gODaeZZTkDYiRNzTzGOg5HtzporUCgYBBOphEtqqImNXnq13qeHip
+O+eo+8/UJpzUEUN9WGmG8NxEeVvSaWin7DrgnKQCuQ5J3Biwk0XcDgoRmks6Ctf/
+WE2oDk/DxGOhowhxZMMgJd6AFUVzOstRqpvcMULCjWB+iV3nqk1Bl3KeWTmzN7O/
+Gfc2s1kFE4btdV7lebObtwKBgE3rkLS8eLVYCh6Cvef9CAms7Im/wRhV+zrvXWh9
+4YljZEdRpy7RV5z03i33N/faLALa3JlF1jp9pIhfTD5Vxk59ULe4hZNRLYoGd+Bj
+hw8kyps1q4WMvkm/fueIrIGjqD2gwvopb4iwy/+n3rbFfHfE0UL8tEXqR3eWnhW1
+D4pFAoGAccR4eMJD43hJWaUQLtsj0RoW9lFKVXj7aqkIIeupXwt7Ic2z/FhCAJi+
+V0MWpd3K6+kPl+ifdt8U4kcYfubPMfJhd7IkMcgQS+yZK1+5xWdRISvI8GpNwIHE
+LUkVkCCadXNNZ7b1nmUKjse95u4IaE6hwAqjSTNb05gPmCfoEjg=
+-----END RSA PRIVATE KEY-----`;
+const JWT_RSA_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk0VOoksAblwP82DALTG6
+xGC86Hfho3nChbcPGWyqn+ScfHBFcg3SeKyy6aWCyLcKfNwE5cPYzuYvVBsZyIrd
+fFOuV90D/aRYbuw6UkKR3cmmy9qEqvu05dogvc0BcmkwbC37Q8JnsZBRcosoLGgT
+FxcK+LXdsG7DukajpsGesxQjOLb21jnx+ypzx74xvj7grqlXkxeDKr22q7QkO3A1
+ApoOuJRAU+SjEEZmqdXzRery2RWxhkWbCXuQw4PnW5Lh3Wwabnu7XKVIa6wJa1pq
+L2IAxmlZ0bvGTfjtO5ggNfgJk5V4bGSOXnsplpG71AWMrK2q6NqHjFIE1szEycUK
+rwIDAQAB
+-----END PUBLIC KEY-----`;
+
 module.exports = {
     before: browser => {
         browser
@@ -154,6 +197,8 @@ module.exports = {
         // testOp(browser, "Extract MAC addresses", "test input", "test_output");
         // testOp(browser, "Extract RGBA", "test input", "test_output");
         // testOp(browser, "Extract URLs", "test input", "test_output");
+        testOp(browser, "Fernet Decrypt", "gAAAAABce-Tycae8klRxhDX2uenJ-uwV8-A1XZ2HRnfOXlNzkKKfRxviNLlgtemhT_fd1Fw5P_zFUAjd69zaJBQyWppAxVV00SExe77ql8c5n62HYJOnoIU=", "This is a secret message.\n", ["VGhpc0lzVGhpcnR5VHdvQ2hhcmFjdGVyc0xvbmdLZXk="]);
+        testOp(browser, ["Fernet Encrypt", "Fernet Decrypt"], "test input", "test input", [["VGhpc0lzVGhpcnR5VHdvQ2hhcmFjdGVyc0xvbmdLZXk="], ["VGhpc0lzVGhpcnR5VHdvQ2hhcmFjdGVyc0xvbmdLZXk="]]);
         // testOp(browser, "Filter", "test input", "test_output");
         // testOp(browser, "Find / Replace", "test input", "test_output");
         // testOp(browser, "Fletcher-16 Checksum", "test input", "test_output");
@@ -223,16 +268,18 @@ module.exports = {
         // testOp(browser, "JSON Minify", "test input", "test_output");
     // testOp(browser, "JSON to CSV", "test input", "test_output");
         testOp(browser, "Jsonata Query", '{"a": "SGVsbG8gV29ybGQh"}', '"Hello World!"', ["$base64decode($.a)"]);
-    // testOp(browser, "JWT Decode", "test input", "test_output");
-    // testOp(browser, "JWT Sign", "test input", "test_output");
-    // testOp(browser, "JWT Verify", "test input", "test_output");
+        testOp(browser, "JWT Decode", JWT_HS256, JWT_PAYLOAD_OUTPUT);
+        testOp(browser, "JWT Sign", JWT_PAYLOAD, JWT_HS256, ["secret_cat", "HS256", "{}"]);
+        testOp(browser, "JWT Sign", JWT_PAYLOAD, JWT_RS256, [JWT_RSA_PRIVATE_KEY, "RS256", "{}"]);
+        testOp(browser, "JWT Verify", JWT_HS256, JWT_PAYLOAD_OUTPUT, ["secret_cat"]);
+        testOp(browser, "JWT Verify", JWT_RS256, JWT_PAYLOAD_OUTPUT, [JWT_RSA_PUBLIC_KEY]);
     // testOp(browser, "JavaScript Beautify", "test input", "test_output");
     // testOp(browser, "JavaScript Minify", "test input", "test_output");
     // testOp(browser, "JavaScript Parser", "test input", "test_output");
         // testOp(browser, "Jump", "test input", "test_output");
     // testOp(browser, "Keccak", "test input", "test_output");
         // testOp(browser, "Label", "test input", "test_output");
-    // testOp(browser, "LM Hash", "test input", "test output");
+        testOp(browser, "LM Hash", "QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*()_+.,?/", "6D9DF16655336CA75A3C13DD18BA8156");
         // testOp(browser, "Lorenz", "test input", "test_output");
         // testOp(browser, "Luhn Checksum", "test input", "test_output");
     // testOp(browser, "LZ String", "test input", "test output");
@@ -326,7 +373,7 @@ Q+47JAY=
         testOpImage(browser, "Rotate Image", "files/Hitchhikers_Guide.jpeg");
         // testOp(browser, "Rotate left", "test input", "test_output");
         // testOp(browser, "Rotate right", "test input", "test_output");
-    // testOp(browser, "Scrypt", "test input", "test output");
+        testOp(browser, "Scrypt", "password", "fdbabe1c9d3472007856e7190d01e9fe7c6ad7cbc8237830e77376634b3731622eaf30d92e22a3886ff109279d9830dac727afb94a83ee6d8360cbdfa2cc0640", [{"option": "Latin1", "string": "NaCl"}, 1024, 8, 16, 64]);
     // testOp(browser, "SHA0", "test input", "test_output");
     // testOp(browser, "SHA1", "test input", "test_output");
     // testOp(browser, "SHA2", "test input", "test_output");
@@ -353,7 +400,7 @@ Q+47JAY=
         // testOp(browser, "Split", "test input", "test_output");
         // testOpImage(browser, "Split Colour Channels", "files/Hitchhikers_Guide.jpeg");
         // testOp(browser, "Standard Deviation", "test input", "test_output");
-        // testOp(browser, "Streebog", "test input", "test_output");
+        testOp(browser, "Streebog", "The quick brown fox jumps over the lazy dog", "3e7dea7f2384b6c5a3d0e24aaa29c05e89ddd762145030ec22c71a6db8b2c1f4", ["256"]);
         // testOp(browser, "Strings", "test input", "test_output");
         // testOp(browser, "Strip HTML tags", "test input", "test_output");
         // testOp(browser, "Strip HTTP headers", "test input", "test_output");
