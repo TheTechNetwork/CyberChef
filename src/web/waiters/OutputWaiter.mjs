@@ -214,6 +214,7 @@ class OutputWaiter {
      */
     async chrEncChange(chrEncVal, manual=false) {
         if (typeof chrEncVal !== "number") return;
+        if (chrEncVal > 0) this.manager.worker.loadCodepage();
         const currentEnc = this.getChrEnc();
 
         const currentTabNum = this.manager.tabs.getActiveTab("output");

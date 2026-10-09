@@ -10,7 +10,7 @@ import Dish from "../../core/Dish.mjs";
 import DishError from "../../core/errors/DishError.mjs";
 import { CHR_ENC_SIMPLE_REVERSE_LOOKUP } from "../../core/lib/ChrEnc.mjs";
 import Utils from "../../core/Utils.mjs";
-import cptable from "codepage";
+import {loadCodepage} from "../utils/codepage.mjs";
 import loglevelMessagePrefix from "loglevel-message-prefix";
 
 loglevelMessagePrefix(log, {
@@ -35,6 +35,15 @@ self.addEventListener("message", function(e) {
             break;
         case "setLogLevel":
             log.setLevel(r.data, false);
+            break;
+        case "loadCodepage":
+            // Errors are reported when the package is actually used
+            loadCodepage().catch(() => {});
+            break;
+        case "docURL":
+            // Used to set the URL of the current document so that chunks can be
+            // loaded into an inline worker.
+            __webpack_public_path__ = `${r.data}/`; // eslint-disable-line no-undef, camelcase
             break;
         default:
             log.error(`Unknown action: '${r.action}'`);
@@ -98,6 +107,7 @@ async function bufferToStr(data) {
         str = Utils.arrayBufferToStr(data.buffer);
     } else {
         try {
+            const cptable = await loadCodepage();
             str = cptable.utils.decode(data.encoding, new Uint8Array(data.buffer));
         } catch (err) {
             str = new DishError(`Error decoding buffer with encoding ${CHR_ENC_SIMPLE_REVERSE_LOOKUP[data.encoding]}: ${err.message}`).toString();

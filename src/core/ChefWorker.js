@@ -67,6 +67,7 @@ self.addEventListener("message", function(e) {
             // Used to set the URL of the current document so that scripts can be
             // imported into an inline worker.
             self.docURL = r.data;
+            __webpack_public_path__ = `${r.data}/`; // eslint-disable-line no-undef, camelcase
             break;
         case "highlight":
             calculateHighlights(
