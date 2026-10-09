@@ -59,6 +59,9 @@ function bake(browser) {
         .expect.element("#bake span").text.to.equal("BAKE!");
 
     browser
+        // A snackbar (e.g. "Output character encoding has been detected...") can sit over the
+        // button, in which case the click is intercepted and nothing bakes
+        .waitForElementNotVisible("#snackbar-container", 6000)
         .click("#bake")
         .waitForElementNotVisible("#stale-indicator", 10000)
         .waitForElementNotVisible("#output-loader", 10000);
