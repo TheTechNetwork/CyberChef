@@ -20,7 +20,7 @@ class VarIntDecode extends Operation {
         super();
 
         this.name = "VarInt Decode";
-        this.module = "Default";
+        this.module = "Protobuf";
         this.description = "Decodes a VarInt encoded integer. VarInt is an efficient way of encoding variable length integers and is commonly used with Protobuf.";
         this.infoURL = "https://developers.google.com/protocol-buffers/docs/encoding#varints";
         this.inputType = "byteArray";
