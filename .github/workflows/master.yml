@@ -6,6 +6,12 @@ on:
     branches:
       - master
 
+# Back-to-back merges otherwise race each other to push gh-pages, and the
+# loser fails with "cannot lock ref". Queue runs instead of overlapping them.
+concurrency:
+  group: master-deploy
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
