@@ -12,7 +12,6 @@ import "arrive";
 import "snackbarjs";
 import "bootstrap-material-design/js/index";
 import "bootstrap-colorpicker";
-import moment from "moment-timezone";
 import * as CanvasComponents from "../core/lib/CanvasComponents.mjs";
 
 // CyberChef
@@ -60,7 +59,9 @@ function main() {
     window.app.setup();
 }
 
-window.compileTime = moment.tz(COMPILE_TIME, "DD/MM/YYYY HH:mm:ss z", "UTC").valueOf();
+// COMPILE_TIME is "DD/MM/YYYY HH:mm:ss UTC" (see Gruntfile.js)
+const [, day, month, year, hour, minute, second] = COMPILE_TIME.match(/^(\d+)\/(\d+)\/(\d+) (\d+):(\d+):(\d+)/);
+window.compileTime = Date.UTC(year, month - 1, day, hour, minute, second);
 window.compileMessage = COMPILE_MSG;
 
 // Make libs available to operation outputs

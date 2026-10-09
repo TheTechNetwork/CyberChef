@@ -10,7 +10,6 @@ import Manager from "./Manager.mjs";
 import HTMLCategory from "./HTMLCategory.mjs";
 import HTMLOperation from "./HTMLOperation.mjs";
 import Split from "split.js";
-import moment from "moment-timezone";
 import {loadCodepage, getLoadedCodepage} from "./utils/codepage.mjs";
 
 
@@ -656,7 +655,7 @@ class App {
         // Display time since last build and compile message
         const now = new Date(),
             msSinceCompile = now.getTime() - window.compileTime,
-            timeSinceCompile = moment.duration(msSinceCompile, "milliseconds").humanize();
+            timeSinceCompile = humaniseDuration(msSinceCompile);
 
         // Calculate previous version to compare to
         const prev = PKG_VERSION.split(".").map(n => {
@@ -841,6 +840,38 @@ class App {
         this.loadURIParams();
     }
 
+}
+
+/**
+ * Describes a duration in words, e.g. "a few seconds", "an hour", "3 days".
+ *
+ * Gives the same wording and rounding thresholds as Moment's English
+ * duration.humanize(), without loading Moment into the main thread.
+ *
+ * @param {number} ms
+ * @returns {string}
+ */
+function humaniseDuration(ms) {
+    ms = Math.abs(ms);
+    const days = ms / 864e5,
+        seconds = Math.round(ms / 1000),
+        minutes = Math.round(ms / 6e4),
+        hours = Math.round(ms / 36e5),
+        wholeDays = Math.round(days),
+        months = Math.round(days * 4800 / 146097),
+        years = Math.round(days * 400 / 146097);
+
+    if (seconds < 45) return "a few seconds";
+    if (minutes <= 1) return "a minute";
+    if (minutes < 45) return `${minutes} minutes`;
+    if (hours <= 1) return "an hour";
+    if (hours < 22) return `${hours} hours`;
+    if (wholeDays <= 1) return "a day";
+    if (wholeDays < 26) return `${wholeDays} days`;
+    if (months <= 1) return "a month";
+    if (months < 11) return `${months} months`;
+    if (years <= 1) return "a year";
+    return `${years} years`;
 }
 
 export default App;

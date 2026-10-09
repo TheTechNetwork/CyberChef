@@ -63,6 +63,13 @@ module.exports = {
             // Required by Jimp to improve loading speed in browsers
             "process.browser": "true"
         }),
+        // Moment bundles every locale through a dynamic require of "./locale".
+        // CyberChef never calls moment.locale(), so only the built-in English is
+        // used and the rest are dead weight in the main bundle and ChefWorker.
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^\.\/locale$/,
+            contextRegExp: /moment$/
+        }),
         new MiniCssExtractPlugin({
             filename: "assets/[name].css"
         }),

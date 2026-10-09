@@ -7,7 +7,6 @@
 import Operation from "../Operation.mjs";
 import OperationError from "../errors/OperationError.mjs";
 import {UNICODE_NORMALISATION_FORMS} from "../lib/ChrEnc.mjs";
-import unorm from "unorm";
 
 /**
  * Normalise Unicode operation
@@ -45,13 +44,13 @@ class NormaliseUnicode extends Operation {
 
         switch (normalForm) {
             case "NFD":
-                return unorm.nfd(input);
+                return input.normalize("NFD");
             case "NFC":
-                return unorm.nfc(input);
+                return input.normalize("NFC");
             case "NFKD":
-                return unorm.nfkd(input);
+                return input.normalize("NFKD");
             case "NFKC":
-                return unorm.nfkc(input);
+                return input.normalize("NFKC");
             default:
                 throw new OperationError("Unknown Normalisation Form");
         }
