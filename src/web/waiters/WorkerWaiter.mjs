@@ -47,6 +47,8 @@ class WorkerWaiter {
             currentAction: ""
         };
         this.dishWorkerQueue = [];
+        // Whether a character encoding has been used, so the DishWorker should load codepage
+        this.dishWorkerNeedsCodepage = false;
     }
 
     /**
@@ -84,6 +86,9 @@ class WorkerWaiter {
             docURL = docURL.substring(0, index);
         }
         this.dishWorker.worker.postMessage({"action": "docURL", "data": docURL});
+        if (this.dishWorkerNeedsCodepage) {
+            this.dishWorker.worker.postMessage({action: "loadCodepage"});
+        }
 
         if (this.dishWorkerQueue.length > 0) {
             this.postDishMessage(this.dishWorkerQueue.splice(0, 1)[0]);
@@ -739,6 +744,19 @@ class WorkerWaiter {
                 id: id
             }
         });
+    }
+
+    /**
+     * Asks the DishWorker to start loading the codepage package so that it is
+     * ready by the time output needs decoding with a character encoding.
+     * Replacement DishWorkers will load it too.
+     */
+    loadCodepage() {
+        if (this.dishWorkerNeedsCodepage) return;
+        this.dishWorkerNeedsCodepage = true;
+        if (this.dishWorker.worker !== null) {
+            this.dishWorker.worker.postMessage({action: "loadCodepage"});
+        }
     }
 
     /**

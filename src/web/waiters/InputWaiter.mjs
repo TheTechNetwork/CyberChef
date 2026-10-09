@@ -239,6 +239,8 @@ class InputWaiter {
      */
     async chrEncChange(chrEncVal, manual=false, internal=false) {
         if (typeof chrEncVal !== "number") return;
+        // The output is likely to be decoded with an encoding too
+        if (chrEncVal > 0) this.manager.worker.loadCodepage();
         // Make sure the encoding can be used before switching to it
         this.pendingChrEnc = chrEncVal;
         if (chrEncVal > 0 && getLoadedCodepage() === null) await loadCodepage();

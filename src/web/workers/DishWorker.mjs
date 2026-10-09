@@ -36,6 +36,10 @@ self.addEventListener("message", function(e) {
         case "setLogLevel":
             log.setLevel(r.data, false);
             break;
+        case "loadCodepage":
+            // Errors are reported when the package is actually used
+            loadCodepage().catch(() => {});
+            break;
         case "docURL":
             // Used to set the URL of the current document so that chunks can be
             // loaded into an inline worker.
