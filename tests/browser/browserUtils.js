@@ -176,7 +176,9 @@ function loadRecipe(browser, opName, input, args) {
 
     setInput(browser, input, false);
     browser
-        .urlHash("recipe=" + recipeConfig)
+        // Encode it: parseURIParams splits params on "=" and turns "+" into
+        // spaces, so args such as padded base64 or PEM keys would be mangled.
+        .urlHash("recipe=" + encodeURIComponent(recipeConfig))
         .waitForElementPresent("#rec-list li.operation");
 }
 
