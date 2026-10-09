@@ -83,6 +83,18 @@
       "minimumReleaseAge": null,
       "groupName": "unabandoned polyfills",
       "groupSlug": "unabandoned"
+    },
+    {
+      "description": "CyberChef's UI is built on Bootstrap 4 + Bootstrap Material Design, which needs jQuery 3 and Popper 1. Upstream's Bootstrap 5 migration (gchq/CyberChef#2847) was closed unmerged as far from ready; take these majors when upstream moves.",
+      "matchPackageNames": [
+        "bootstrap",
+        "jquery",
+        "popper.js"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
     }
   ]
 }
