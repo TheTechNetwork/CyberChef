@@ -117,7 +117,7 @@
     "codepage": "^1.15.0",
     "crypto-api": "^0.8.5",
     "crypto-browserify": "npm:@unabandoned/crypto-browserify@^3.16.0",
-    "crypto-js": "^4.2.0",
+    "crypto-js": "npm:@unabandoned/crypto-js@^4.2.1",
     "ctph.js": "0.0.5",
     "d3": "npm:@unabandoned/d3@^7.10.0",
     "d3-hexbin": "^0.2.2",
